@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="en">
+ <head>
+  <meta charset="UTF-8">
+  <title>Dashboard for /vagrant/playground/Includes</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href=".css/bootstrap.min.css" rel="stylesheet" type="text/css">
+  <link href=".css/nv.d3.min.css" rel="stylesheet" type="text/css">
+  <link href=".css/style.css" rel="stylesheet" type="text/css">
+  <!--[if lt IE 9]>
+  <script src=".js/html5shiv.min.js"></script>
+  <script src=".js/respond.min.js"></script>
+  <![endif]-->
+ </head>
+ <body>
+  <header>
+   <div class="container">
+    <div class="row">
+     <div class="col-md-12">
+      <ol class="breadcrumb">
+        <li><a href="index.html">/vagrant/playground/Includes</a></li>
+        <li class="active">(Dashboard)</li>
+
+      </ol>
+     </div>
+    </div>
+   </div>
+  </header>
+  <div class="container">
+   <div class="row">
+    <div class="col-md-12">
+     <h2>Classes</h2>
+    </div>
+   </div>
+   <div class="row">
+    <div class="col-md-6">
+     <h3>Coverage Distribution</h3>
+     <div id="classCoverageDistribution" style="height: 300px;">
+       <svg></svg>
+     </div>
+    </div>
+    <div class="col-md-6">
+     <h3>Complexity</h3>
+     <div id="classComplexity" style="height: 300px;">
+       <svg></svg>
+     </div>
+    </div>
+   </div>
+   <div class="row">
+    <div class="col-md-6">
+     <h3>Insufficient Coverage</h3>
+     <div class="scrollbox">
+      <table class="table">
+       <thead>
+        <tr>
+         <th>Class</th>
+         <th class="text-right">Coverage</th>
+        </tr>
+       </thead>
+       <tbody>
+       <tr><td><a href="Controller/CategoryController.php.html#7">Controller\CategoryController</a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Controller/CommentController.php.html#7">Controller\CommentController</a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Controller/TopicController.php.html#7">Controller\TopicController</a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Controller/UserController.php.html#7">Controller\UserController</a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Lib/BaseController.php.html#9">Lib\BaseController</a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Lib/Dispatcher.php.html#7">Lib\Dispatcher</a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Lib/Validate.php.html#27">Lib\Validate</a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Model/CommentModel.php.html#6">Model\CommentModel</a></td><td class="text-right">6%</td></tr>
+       <tr><td><a href="Model/TopicModel.php.html#6">Model\TopicModel</a></td><td class="text-right">14%</td></tr>
+       <tr><td><a href="Model/CategoryModel.php.html#6">Model\CategoryModel</a></td><td class="text-right">40%</td></tr>
+       <tr><td><a href="Model/UserModel.php.html#6">Model\UserModel</a></td><td class="text-right">47%</td></tr>
+
+       </tbody>
+      </table>
+     </div>
+    </div>
+    <div class="col-md-6">
+     <h3>Project Risks</h3>
+     <div class="scrollbox">
+      <table class="table">
+       <thead>
+        <tr>
+         <th>Class</th>
+         <th class="text-right"><abbr title="Change Risk Anti-Patterns (CRAP) Index">CRAP</abbr></th>
+        </tr>
+       </thead>
+       <tbody>
+       <tr><td><a href="Lib/Validate.php.html#27">Lib\Validate</a></td><td class="text-right">1980</td></tr>
+       <tr><td><a href="Lib/Dispatcher.php.html#7">Lib\Dispatcher</a></td><td class="text-right">930</td></tr>
+       <tr><td><a href="Lib/BaseController.php.html#9">Lib\BaseController</a></td><td class="text-right">240</td></tr>
+       <tr><td><a href="Model/CommentModel.php.html#6">Model\CommentModel</a></td><td class="text-right">47</td></tr>
+       <tr><td><a href="Model/UserModel.php.html#6">Model\UserModel</a></td><td class="text-right">37</td></tr>
+       <tr><td><a href="Model/CategoryModel.php.html#6">Model\CategoryModel</a></td><td class="text-right">10</td></tr>
+
+       </tbody>
+      </table>
+     </div>
+    </div>
+   </div>
+   <div class="row">
+    <div class="col-md-12">
+     <h2>Methods</h2>
+    </div>
+   </div>
+   <div class="row">
+    <div class="col-md-6">
+     <h3>Coverage Distribution</h3>
+     <div id="methodCoverageDistribution" style="height: 300px;">
+       <svg></svg>
+     </div>
+    </div>
+    <div class="col-md-6">
+     <h3>Complexity</h3>
+     <div id="methodComplexity" style="height: 300px;">
+       <svg></svg>
+     </div>
+    </div>
+   </div>
+   <div class="row">
+    <div class="col-md-6">
+     <h3>Insufficient Coverage</h3>
+     <div class="scrollbox">
+      <table class="table">
+       <thead>
+        <tr>
+         <th>Method</th>
+         <th class="text-right">Coverage</th>
+        </tr>
+       </thead>
+       <tbody>
+       <tr><td><a href="Controller/CategoryController.php.html#70"><abbr title="Controller\CategoryController::postIndexAction">postIndexAction</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Model/CategoryModel.php.html#31"><abbr title="Model\CategoryModel::delete">delete</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Lib/Dispatcher.php.html#166"><abbr title="Lib\Dispatcher::sendHeaders">sendHeaders</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Lib/Dispatcher.php.html#176"><abbr title="Lib\Dispatcher::sendBody">sendBody</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Lib/Dispatcher.php.html#193"><abbr title="Lib\Dispatcher::addHeader">addHeader</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Lib/Dispatcher.php.html#201"><abbr title="Lib\Dispatcher::getAllHeaders">getAllHeaders</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Lib/Validate.php.html#35"><abbr title="Lib\Validate::validate">validate</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Lib/Validate.php.html#55"><abbr title="Lib\Validate::getErrors">getErrors</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Lib/Validate.php.html#66"><abbr title="Lib\Validate::_validateRequired">_validateRequired</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Lib/Validate.php.html#94"><abbr title="Lib\Validate::_validateType">_validateType</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Lib/Validate.php.html#170"><abbr title="Lib\Validate::_throw">_throw</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Model/CategoryModel.php.html#23"><abbr title="Model\CategoryModel::update">update</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Model/CommentModel.php.html#23"><abbr title="Model\CommentModel::update">update</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Controller/CategoryController.php.html#84"><abbr title="Controller\CategoryController::putIndexAction">putIndexAction</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Model/CommentModel.php.html#31"><abbr title="Model\CommentModel::delete">delete</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Model/CommentModel.php.html#36"><abbr title="Model\CommentModel::get">get</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Model/CommentModel.php.html#48"><abbr title="Model\CommentModel::getCommentById">getCommentById</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Model/CommentModel.php.html#74"><abbr title="Model\CommentModel::getCommentsByTopicId">getCommentsByTopicId</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Model/TopicModel.php.html#23"><abbr title="Model\TopicModel::update">update</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Model/TopicModel.php.html#31"><abbr title="Model\TopicModel::delete">delete</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Model/TopicModel.php.html#39"><abbr title="Model\TopicModel::get">get</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Model/TopicModel.php.html#60"><abbr title="Model\TopicModel::deleteByCategory">deleteByCategory</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Model/UserModel.php.html#54"><abbr title="Model\UserModel::authenticateToken">authenticateToken</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Model/UserModel.php.html#68"><abbr title="Model\UserModel::get">get</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Lib/Dispatcher.php.html#152"><abbr title="Lib\Dispatcher::execute">execute</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Lib/Dispatcher.php.html#136"><abbr title="Lib\Dispatcher::checkAuth">checkAuth</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Lib/Dispatcher.php.html#123"><abbr title="Lib\Dispatcher::loadController">loadController</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Lib/Dispatcher.php.html#99"><abbr title="Lib\Dispatcher::_parseUrl">_parseUrl</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Controller/CategoryController.php.html#96"><abbr title="Controller\CategoryController::deleteIndexAction">deleteIndexAction</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Controller/CategoryController.php.html#105"><abbr title="Controller\CategoryController::getIndexAction">getIndexAction</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Controller/CommentController.php.html#76"><abbr title="Controller\CommentController::postIndexAction">postIndexAction</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Controller/CommentController.php.html#87"><abbr title="Controller\CommentController::putIndexAction">putIndexAction</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Controller/CommentController.php.html#100"><abbr title="Controller\CommentController::getIndexAction">getIndexAction</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Controller/CommentController.php.html#108"><abbr title="Controller\CommentController::deleteIndexAction">deleteIndexAction</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Controller/TopicController.php.html#60"><abbr title="Controller\TopicController::postIndexAction">postIndexAction</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Controller/TopicController.php.html#73"><abbr title="Controller\TopicController::putIndexAction">putIndexAction</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Controller/TopicController.php.html#84"><abbr title="Controller\TopicController::deleteIndexAction">deleteIndexAction</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Controller/TopicController.php.html#91"><abbr title="Controller\TopicController::getIndexAction">getIndexAction</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Controller/UserController.php.html#69"><abbr title="Controller\UserController::postAuthenticateAction">postAuthenticateAction</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Controller/UserController.php.html#76"><abbr title="Controller\UserController::getAction">getAction</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Lib/BaseController.php.html#31"><abbr title="Lib\BaseController::__construct">__construct</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Lib/BaseController.php.html#64"><abbr title="Lib\BaseController::validate">validate</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Lib/BaseController.php.html#81"><abbr title="Lib\BaseController::addHeader">addHeader</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Lib/BaseController.php.html#90"><abbr title="Lib\BaseController::getUserCredentials">getUserCredentials</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Lib/BaseController.php.html#102"><abbr title="Lib\BaseController::tokenValidationRequiredFor">tokenValidationRequiredFor</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Lib/BaseController.php.html#111"><abbr title="Lib\BaseController::setUserCredentials">setUserCredentials</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Lib/BaseModel.php.html#98"><abbr title="Lib\BaseModel::_delete">_delete</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Lib/Dispatcher.php.html#59"><abbr title="Lib\Dispatcher::getInstance">getInstance</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Lib/Dispatcher.php.html#70"><abbr title="Lib\Dispatcher::setDebugData">setDebugData</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Lib/Dispatcher.php.html#86"><abbr title="Lib\Dispatcher::setRequest">setRequest</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Model/UserModel.php.html#112"><abbr title="Model\UserModel::_upsertBranch">_upsertBranch</abbr></a></td><td class="text-right">53%</td></tr>
+       <tr><td><a href="Model/UserModel.php.html#146"><abbr title="Model\UserModel::_upsertCompany">_upsertCompany</abbr></a></td><td class="text-right">53%</td></tr>
+       <tr><td><a href="Model/UserModel.php.html#13"><abbr title="Model\UserModel::getUserToken">getUserToken</abbr></a></td><td class="text-right">66%</td></tr>
+
+       </tbody>
+      </table>
+     </div>
+    </div>
+    <div class="col-md-6">
+     <h3>Project Risks</h3>
+     <div class="scrollbox">
+      <table class="table">
+       <thead>
+        <tr>
+         <th>Method</th>
+         <th class="text-right"><abbr title="Change Risk Anti-Patterns (CRAP) Index">CRAP</abbr></th>
+        </tr>
+       </thead>
+       <tbody>
+       <tr><td><a href="Lib/Validate.php.html#94"><abbr title="Lib\Validate::_validateType">_validateType</abbr></a></td><td class="text-right">650</td></tr>
+       <tr><td><a href="Lib/Validate.php.html#66"><abbr title="Lib\Validate::_validateRequired">_validateRequired</abbr></a></td><td class="text-right">156</td></tr>
+       <tr><td><a href="Lib/BaseController.php.html#31"><abbr title="Lib\BaseController::__construct">__construct</abbr></a></td><td class="text-right">56</td></tr>
+       <tr><td><a href="Lib/Dispatcher.php.html#201"><abbr title="Lib\Dispatcher::getAllHeaders">getAllHeaders</abbr></a></td><td class="text-right">42</td></tr>
+       <tr><td><a href="Lib/Validate.php.html#35"><abbr title="Lib\Validate::validate">validate</abbr></a></td><td class="text-right">30</td></tr>
+       <tr><td><a href="Lib/Dispatcher.php.html#99"><abbr title="Lib\Dispatcher::_parseUrl">_parseUrl</abbr></a></td><td class="text-right">20</td></tr>
+       <tr><td><a href="Lib/Dispatcher.php.html#176"><abbr title="Lib\Dispatcher::sendBody">sendBody</abbr></a></td><td class="text-right">20</td></tr>
+       <tr><td><a href="Lib/Dispatcher.php.html#136"><abbr title="Lib\Dispatcher::checkAuth">checkAuth</abbr></a></td><td class="text-right">12</td></tr>
+       <tr><td><a href="Lib/Dispatcher.php.html#152"><abbr title="Lib\Dispatcher::execute">execute</abbr></a></td><td class="text-right">12</td></tr>
+       <tr><td><a href="Lib/Dispatcher.php.html#123"><abbr title="Lib\Dispatcher::loadController">loadController</abbr></a></td><td class="text-right">6</td></tr>
+       <tr><td><a href="Lib/Dispatcher.php.html#166"><abbr title="Lib\Dispatcher::sendHeaders">sendHeaders</abbr></a></td><td class="text-right">6</td></tr>
+       <tr><td><a href="Lib/BaseController.php.html#64"><abbr title="Lib\BaseController::validate">validate</abbr></a></td><td class="text-right">6</td></tr>
+       <tr><td><a href="Lib/Dispatcher.php.html#59"><abbr title="Lib\Dispatcher::getInstance">getInstance</abbr></a></td><td class="text-right">6</td></tr>
+       <tr><td><a href="Lib/BaseController.php.html#90"><abbr title="Lib\BaseController::getUserCredentials">getUserCredentials</abbr></a></td><td class="text-right">6</td></tr>
+       <tr><td><a href="Model/CategoryModel.php.html#31"><abbr title="Model\CategoryModel::delete">delete</abbr></a></td><td class="text-right">6</td></tr>
+       <tr><td><a href="Model/CommentModel.php.html#36"><abbr title="Model\CommentModel::get">get</abbr></a></td><td class="text-right">6</td></tr>
+       <tr><td><a href="Model/UserModel.php.html#54"><abbr title="Model\UserModel::authenticateToken">authenticateToken</abbr></a></td><td class="text-right">6</td></tr>
+       <tr><td><a href="Model/UserModel.php.html#112"><abbr title="Model\UserModel::_upsertBranch">_upsertBranch</abbr></a></td><td class="text-right">3</td></tr>
+       <tr><td><a href="Model/UserModel.php.html#146"><abbr title="Model\UserModel::_upsertCompany">_upsertCompany</abbr></a></td><td class="text-right">3</td></tr>
+       <tr><td><a href="Model/UserModel.php.html#13"><abbr title="Model\UserModel::getUserToken">getUserToken</abbr></a></td><td class="text-right">3</td></tr>
+
+       </tbody>
+      </table>
+     </div>
+    </div>
+   </div>
+   <footer>
+    <hr/>
+    <p>
+     <small>Generated by <a href="https://github.com/sebastianbergmann/php-code-coverage" target="_top">php-code-coverage 6.0.1</a> using <a href="https://secure.php.net/" target="_top">PHP 7.2.2-3+ubuntu16.04.1+deb.sury.org+1</a> with <a href="https://xdebug.org/">Xdebug 2.6.0</a> and <a href="https://phpunit.de/">PHPUnit 7.0.0</a> at Tue Feb 13 16:18:24 UTC 2018.</small>
+    </p>
+   </footer>
+  </div>
+  <script src=".js/jquery.min.js" type="text/javascript"></script>
+  <script src=".js/bootstrap.min.js" type="text/javascript"></script>
+  <script src=".js/holder.min.js" type="text/javascript"></script>
+  <script src=".js/d3.min.js" type="text/javascript"></script>
+  <script src=".js/nv.d3.min.js" type="text/javascript"></script>
+  <script type="text/javascript">
+$(document).ready(function() {
+  nv.addGraph(function() {
+    var chart = nv.models.multiBarChart();
+    chart.tooltips(false)
+      .showControls(false)
+      .showLegend(false)
+      .reduceXTicks(false)
+      .staggerLabels(true)
+      .yAxis.tickFormat(d3.format('d'));
+
+    d3.select('#classCoverageDistribution svg')
+      .datum(getCoverageDistributionData([7,1,1,0,0,2,0,0,0,1,0,1], "Class Coverage"))
+      .transition().duration(500).call(chart);
+
+    nv.utils.windowResize(chart.update);
+
+    return chart;
+  });
+
+  nv.addGraph(function() {
+    var chart = nv.models.multiBarChart();
+    chart.tooltips(false)
+      .showControls(false)
+      .showLegend(false)
+      .reduceXTicks(false)
+      .staggerLabels(true)
+      .yAxis.tickFormat(d3.format('d'));
+
+    d3.select('#methodCoverageDistribution svg')
+      .datum(getCoverageDistributionData([50,0,0,0,0,0,2,1,0,1,1,13], "Method Coverage"))
+      .transition().duration(500).call(chart);
+
+    nv.utils.windowResize(chart.update);
+
+    return chart;
+  });
+
+  function getCoverageDistributionData(data, label) {
+    var labels = [
+      '0%',
+      '0-10%',
+      '10-20%',
+      '20-30%',
+      '30-40%',
+      '40-50%',
+      '50-60%',
+      '60-70%',
+      '70-80%',
+      '80-90%',
+      '90-100%',
+      '100%'
+    ];
+    var values = [];
+    $.each(labels, function(key) {
+      values.push({x: labels[key], y: data[key]});
+    });
+
+    return [
+      {
+        key: label,
+        values: values,
+        color: "#4572A7"
+      }
+    ];
+  }
+  nv.addGraph(function() {
+    var chart = nv.models.scatterChart()
+      .showDistX(true)
+      .showDistY(true)
+      .showLegend(false)
+      .forceX([0, 100]);
+    chart.tooltipContent(function(graph) {
+      return '<p>' + graph.point.class + '</p>';
+    });
+
+    chart.xAxis.axisLabel('Code Coverage (in percent)');
+    chart.yAxis.axisLabel('Cyclomatic Complexity');
+
+    d3.select('#classComplexity svg')
+      .datum(getComplexityData([[0,4,"<a href=\"Controller\/CategoryController.php.html#7\">Controller\\CategoryController<\/a>"],[0,4,"<a href=\"Controller\/CommentController.php.html#7\">Controller\\CommentController<\/a>"],[0,4,"<a href=\"Controller\/TopicController.php.html#7\">Controller\\TopicController<\/a>"],[0,2,"<a href=\"Controller\/UserController.php.html#7\">Controller\\UserController<\/a>"],[0,15,"<a href=\"Lib\/BaseController.php.html#9\">Lib\\BaseController<\/a>"],[85.1063829787234,13,"<a href=\"Lib\/BaseModel.php.html#4\">Lib\\BaseModel<\/a>"],[100,3,"<a href=\"Lib\/Bootstrap.php.html#10\">Lib\\Bootstrap<\/a>"],[0,30,"<a href=\"Lib\/Dispatcher.php.html#7\">Lib\\Dispatcher<\/a>"],[0,44,"<a href=\"Lib\/Validate.php.html#27\">Lib\\Validate<\/a>"],[40,5,"<a href=\"Model\/CategoryModel.php.html#6\">Model\\CategoryModel<\/a>"],[6.25,7,"<a href=\"Model\/CommentModel.php.html#6\">Model\\CommentModel<\/a>"],[14.285714285714285,5,"<a href=\"Model\/TopicModel.php.html#6\">Model\\TopicModel<\/a>"],[47.540983606557376,13,"<a href=\"Model\/UserModel.php.html#6\">Model\\UserModel<\/a>"]], 'Class Complexity'))
+      .transition()
+      .duration(500)
+      .call(chart);
+
+    nv.utils.windowResize(chart.update);
+
+    return chart;
+  });
+
+  nv.addGraph(function() {
+    var chart = nv.models.scatterChart()
+      .showDistX(true)
+      .showDistY(true)
+      .showLegend(false)
+      .forceX([0, 100]);
+    chart.tooltipContent(function(graph) {
+      return '<p>' + graph.point.class + '</p>';
+    });
+
+    chart.xAxis.axisLabel('Code Coverage (in percent)');
+    chart.yAxis.axisLabel('Method Complexity');
+
+    d3.select('#methodComplexity svg')
+      .datum(getComplexityData([[0,1,"<a href=\"Controller\/CategoryController.php.html#70\">Controller\\CategoryController::postIndexAction<\/a>"],[0,1,"<a href=\"Controller\/CategoryController.php.html#84\">Controller\\CategoryController::putIndexAction<\/a>"],[0,1,"<a href=\"Controller\/CategoryController.php.html#96\">Controller\\CategoryController::deleteIndexAction<\/a>"],[0,1,"<a href=\"Controller\/CategoryController.php.html#105\">Controller\\CategoryController::getIndexAction<\/a>"],[0,1,"<a href=\"Controller\/CommentController.php.html#76\">Controller\\CommentController::postIndexAction<\/a>"],[0,1,"<a href=\"Controller\/CommentController.php.html#87\">Controller\\CommentController::putIndexAction<\/a>"],[0,1,"<a href=\"Controller\/CommentController.php.html#100\">Controller\\CommentController::getIndexAction<\/a>"],[0,1,"<a href=\"Controller\/CommentController.php.html#108\">Controller\\CommentController::deleteIndexAction<\/a>"],[0,1,"<a href=\"Controller\/TopicController.php.html#60\">Controller\\TopicController::postIndexAction<\/a>"],[0,1,"<a href=\"Controller\/TopicController.php.html#73\">Controller\\TopicController::putIndexAction<\/a>"],[0,1,"<a href=\"Controller\/TopicController.php.html#84\">Controller\\TopicController::deleteIndexAction<\/a>"],[0,1,"<a href=\"Controller\/TopicController.php.html#91\">Controller\\TopicController::getIndexAction<\/a>"],[0,1,"<a href=\"Controller\/UserController.php.html#69\">Controller\\UserController::postAuthenticateAction<\/a>"],[0,1,"<a href=\"Controller\/UserController.php.html#76\">Controller\\UserController::getAction<\/a>"],[0,7,"<a href=\"Lib\/BaseController.php.html#31\">Lib\\BaseController::__construct<\/a>"],[0,2,"<a href=\"Lib\/BaseController.php.html#64\">Lib\\BaseController::validate<\/a>"],[0,1,"<a href=\"Lib\/BaseController.php.html#81\">Lib\\BaseController::addHeader<\/a>"],[0,2,"<a href=\"Lib\/BaseController.php.html#90\">Lib\\BaseController::getUserCredentials<\/a>"],[0,1,"<a href=\"Lib\/BaseController.php.html#102\">Lib\\BaseController::tokenValidationRequiredFor<\/a>"],[0,1,"<a href=\"Lib\/BaseController.php.html#111\">Lib\\BaseController::setUserCredentials<\/a>"],[100,1,"<a href=\"Lib\/BaseController.php.html#122\">Lib\\BaseController::_getAllHeaders<\/a>"],[100,2,"<a href=\"Lib\/BaseModel.php.html#15\">Lib\\BaseModel::getDb<\/a>"],[100,1,"<a href=\"Lib\/BaseModel.php.html#31\">Lib\\BaseModel::_query<\/a>"],[85.71428571428571,4,"<a href=\"Lib\/BaseModel.php.html#43\">Lib\\BaseModel::_insert<\/a>"],[93.33333333333333,4,"<a href=\"Lib\/BaseModel.php.html#71\">Lib\\BaseModel::_update<\/a>"],[0,1,"<a href=\"Lib\/BaseModel.php.html#98\">Lib\\BaseModel::_delete<\/a>"],[100,1,"<a href=\"Lib\/BaseModel.php.html#109\">Lib\\BaseModel::_truncate<\/a>"],[100,1,"<a href=\"Lib\/Bootstrap.php.html#12\">Lib\\Bootstrap::__construct<\/a>"],[100,1,"<a href=\"Lib\/Bootstrap.php.html#17\">Lib\\Bootstrap::bootstrap<\/a>"],[100,1,"<a href=\"Lib\/Bootstrap.php.html#23\">Lib\\Bootstrap::setIncludePaths<\/a>"],[0,2,"<a href=\"Lib\/Dispatcher.php.html#59\">Lib\\Dispatcher::getInstance<\/a>"],[0,1,"<a href=\"Lib\/Dispatcher.php.html#70\">Lib\\Dispatcher::setDebugData<\/a>"],[100,1,"<a href=\"Lib\/Dispatcher.php.html#78\">Lib\\Dispatcher::__construct<\/a>"],[0,1,"<a href=\"Lib\/Dispatcher.php.html#86\">Lib\\Dispatcher::setRequest<\/a>"],[0,4,"<a href=\"Lib\/Dispatcher.php.html#99\">Lib\\Dispatcher::_parseUrl<\/a>"],[0,2,"<a href=\"Lib\/Dispatcher.php.html#123\">Lib\\Dispatcher::loadController<\/a>"],[0,3,"<a href=\"Lib\/Dispatcher.php.html#136\">Lib\\Dispatcher::checkAuth<\/a>"],[0,3,"<a href=\"Lib\/Dispatcher.php.html#152\">Lib\\Dispatcher::execute<\/a>"],[0,2,"<a href=\"Lib\/Dispatcher.php.html#166\">Lib\\Dispatcher::sendHeaders<\/a>"],[0,4,"<a href=\"Lib\/Dispatcher.php.html#176\">Lib\\Dispatcher::sendBody<\/a>"],[0,1,"<a href=\"Lib\/Dispatcher.php.html#193\">Lib\\Dispatcher::addHeader<\/a>"],[0,6,"<a href=\"Lib\/Dispatcher.php.html#201\">Lib\\Dispatcher::getAllHeaders<\/a>"],[0,5,"<a href=\"Lib\/Validate.php.html#35\">Lib\\Validate::validate<\/a>"],[0,1,"<a href=\"Lib\/Validate.php.html#55\">Lib\\Validate::getErrors<\/a>"],[0,12,"<a href=\"Lib\/Validate.php.html#66\">Lib\\Validate::_validateRequired<\/a>"],[0,25,"<a href=\"Lib\/Validate.php.html#94\">Lib\\Validate::_validateType<\/a>"],[0,1,"<a href=\"Lib\/Validate.php.html#170\">Lib\\Validate::_throw<\/a>"],[100,1,"<a href=\"Model\/CategoryModel.php.html#13\">Model\\CategoryModel::create<\/a>"],[0,1,"<a href=\"Model\/CategoryModel.php.html#23\">Model\\CategoryModel::update<\/a>"],[0,2,"<a href=\"Model\/CategoryModel.php.html#31\">Model\\CategoryModel::delete<\/a>"],[100,1,"<a href=\"Model\/CategoryModel.php.html#45\">Model\\CategoryModel::get<\/a>"],[100,1,"<a href=\"Model\/CommentModel.php.html#13\">Model\\CommentModel::create<\/a>"],[0,1,"<a href=\"Model\/CommentModel.php.html#23\">Model\\CommentModel::update<\/a>"],[0,1,"<a href=\"Model\/CommentModel.php.html#31\">Model\\CommentModel::delete<\/a>"],[0,2,"<a href=\"Model\/CommentModel.php.html#36\">Model\\CommentModel::get<\/a>"],[0,1,"<a href=\"Model\/CommentModel.php.html#48\">Model\\CommentModel::getCommentById<\/a>"],[0,1,"<a href=\"Model\/CommentModel.php.html#74\">Model\\CommentModel::getCommentsByTopicId<\/a>"],[100,1,"<a href=\"Model\/TopicModel.php.html#13\">Model\\TopicModel::create<\/a>"],[0,1,"<a href=\"Model\/TopicModel.php.html#23\">Model\\TopicModel::update<\/a>"],[0,1,"<a href=\"Model\/TopicModel.php.html#31\">Model\\TopicModel::delete<\/a>"],[0,1,"<a href=\"Model\/TopicModel.php.html#39\">Model\\TopicModel::get<\/a>"],[0,1,"<a href=\"Model\/TopicModel.php.html#60\">Model\\TopicModel::deleteByCategory<\/a>"],[66.66666666666666,3,"<a href=\"Model\/UserModel.php.html#13\">Model\\UserModel::getUserToken<\/a>"],[0,2,"<a href=\"Model\/UserModel.php.html#54\">Model\\UserModel::authenticateToken<\/a>"],[0,1,"<a href=\"Model\/UserModel.php.html#68\">Model\\UserModel::get<\/a>"],[100,1,"<a href=\"Model\/UserModel.php.html#101\">Model\\UserModel::_generateToken<\/a>"],[53.84615384615385,3,"<a href=\"Model\/UserModel.php.html#112\">Model\\UserModel::_upsertBranch<\/a>"],[53.84615384615385,3,"<a href=\"Model\/UserModel.php.html#146\">Model\\UserModel::_upsertCompany<\/a>"]], 'Method Complexity'))
+      .transition()
+      .duration(500)
+      .call(chart);
+
+    nv.utils.windowResize(chart.update);
+
+    return chart;
+  });
+
+  function getComplexityData(data, label) {
+    var values = [];
+    $.each(data, function(key) {
+      var value = Math.round(data[key][0]*100) / 100;
+      values.push({
+        x: value,
+        y: data[key][1],
+        class: data[key][2],
+        size: 0.05,
+        shape: 'diamond'
+      });
+    });
+
+    return [
+      {
+        key: label,
+        values: values,
+        color: "#4572A7"
+      }
+    ];
+  }
+});
+  </script>
+ </body>
+</html>

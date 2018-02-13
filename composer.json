@@ -1,0 +1,14 @@
+{
+    "require-dev": {
+        "phpunit/phpunit": "^7.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "Lib\\": "Includes/Lib/",
+            "Config\\": "Includes/Config/",
+            "Controller\\": "Includes/Controller",
+            "Model\\": "Includes/Model/"
+
+        }
+    }
+}

@@ -1,0 +1,25 @@
+<phpunit bootstrap="Includes/Lib/PhpUnit.php" verbose="true" colors="true">
+    <php>
+        <includePath>./vendor/phpunit/phpunit</includePath>
+    </php>
+    <filter>
+        <whitelist processUncoveredFilesFromWhitelist="true">
+            <directory suffix=".php">./Includes</directory>
+            <exclude>
+                <directory suffix=".php">./vendor</directory>
+                <directory suffix=".php">./public</directory>
+                <directory suffix=".php">./Includes/Config</directory>
+                <directory suffix=".php">./Includes/Test</directory>
+                <file>./Includes/Lib/PhpUnit.php</file>
+            </exclude>
+        </whitelist>
+    </filter>
+    <logging>
+        <log type="coverage-html" target="./public/phpunit" lowUpperBound="35" highLowerBound="70"/>
+    </logging>
+    <testsuites>
+        <testsuite name="Forum">
+            <directory>./Includes</directory>
+        </testsuite>
+    </testsuites>
+</phpunit>

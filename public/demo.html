@@ -1,0 +1,263 @@
+<html>
+    <head>
+        <style>
+            body{padding: 20px;}
+            #forumDialog{ margin: 20px 10px; border-radius: 4px; background: #f5f5f5; color: #030303;}
+            #forumDialog ul{border-left: 2px solid #CCC; border-top: 1px solid #CCC; padding: 10px; list-style: none;}
+            #forumDialog div.controls{background: #CCC; position: relative;}
+            #forumDialog div.controls button{width: 40%; margin: 5px 4%;}
+        </style>
+        <link rel="stylesheet" href="http://code.jquery.com/ui/1.12.1/themes/dark-hive/jquery-ui.css">
+        <script src="http://code.jquery.com/jquery-3.3.1.min.js"></script>
+        <script src="http://code.jquery.com/ui/1.12.1/jquery-ui.min.js"></script>
+
+        <script type="text/javascript">
+            jQuery(function(){
+                    jQuery('#forumDialog').forumDemo();
+            });
+
+            ;( function( $, window, document, undefined ) {
+                "use strict";
+                $.fn.forumDemo = function(options) {
+                    var defaults = {
+                        "user_name": "G.E. Prak",
+                        "user_id": 24,
+                        "company_name": "Pr. Uts & ak BV.",
+                        "ext_company_id": 12,
+                        "forum_type": "forum",
+                        "branch_name": "Fysio Therapie",
+                        "ext_branch_id": 12
+                    }
+                    var $forum = jQuery('#forumDialog');
+                    jQuery.extend(defaults, options);
+
+                    var methods = {
+                        authenticate: function(){
+                            jQuery.ajax({
+                                url: '/user/Authenticate',
+                                method: 'POST',
+                                data:  JSON.stringify(defaults),
+                                processData: false,
+                                contentType: 'application/json',
+                                success: function(json){
+                                    jQuery.ajaxSetup({
+                                        beforeSend: function (req) {
+                                            req.setRequestHeader('X-authenticationToken', json.token);
+                                        }
+                                    });
+                                    methods.fetchCategory(0, $forum.find('#forumPosts>li:first'));
+                                }
+                            });
+                        },
+                        fetchCategory: function(category_id, $element){
+                            jQuery.getJSON('/category', {category_id: category_id}, function(json){
+                                methods.buildOverview(json, $element);
+
+                            });
+                        },
+                        fetchComments: function(topic_id, $element){
+                            jQuery.getJSON('/comment', {topic_id: topic_id}, function(json){
+                                $element.find('ul').html('');
+                                jQuery.each(json, function(k, data){
+                                    var $ul = $element.find('ul:first');
+                                    $ul.prepend(
+                                    '<li class="comment" data-comment_id="'+data.comment_id+'" style="display: none; background: #C1C1C1C1;">'+
+                                    '<span>'+data.created_at+' '+data.user_name+'</span>'+
+                                    '<p>'+data.description+'</p>'+
+                                    '</li>');
+                                    $ul.find('li:first').slideDown('fast',function(){
+                                        jQuery(this).css('background', '#d5d5d5')
+                                    });
+                                })
+                            });
+                        },
+
+                        buildOverview: function(overviewData, $element){
+                            jQuery.each(overviewData, function(k,v){
+                                if(v.type=='category'){
+                                    methods.buildCategoryUI(v, $element)
+                                }else{
+                                    methods.buildTopicUI(v, $element);
+                                }
+                                return true;
+                            });
+                        },
+                        buildCategoryUI: function(categoryData, $element){
+                            var $ul = $element.find('ul:first');
+                            $ul.prepend(
+                                '<li class="category" data-category_id="'+categoryData.category_id+'" style="display: none; background: #C1C1C1C1;">'+
+                                '<h3>'+categoryData.title+'</h3>'+
+                                '<span>Last topic:'+categoryData.last_topic+' '+categoryData.total_categories+' catgories, '+categoryData.total_topics+' topics</span>'+
+                                '<p>'+categoryData.description+'</p>'+
+                                '<ul></ul>'+
+                                '<div class="controls">' +
+                                '<button class="createCategory">New category</button>' +
+                                '<button class="createTopic">New topic</button>' +
+                                '</div>'+
+                                '</li>'
+                            );
+                            $ul.find('li:first').slideDown('fast',function(){
+                                jQuery(this).css('background', '#f5f5f5')
+                            })
+                            methods.fetchCategory(categoryData.category_id, $ul.find('li:first'));
+                        },
+                        buildTopicUI: function(topicData, $element){
+                            var $ul = $element.find('ul:first');
+                            $ul.prepend(
+                                '<li class="topic" data-category_id="'+topicData.category_id+'" data-topic_id="'+topicData.topic_id+'" style="display: none; background: #C1C1C1C1;">'+
+                                '<h3>'+topicData.title+'</h3>'+
+                                '<span>created at:'+topicData.created_at+' by:'+topicData.user_name+'('+topicData.company_name + ') total comments: ' + topicData.total_comments+'</span>'+
+                                '<p>'+topicData.description+'</p>'+
+                                '<ul></ul>'+
+                                '<div class="controls">' +
+                                '<button class="createComment">New comment</button>' +
+                                '</div>'+
+                                '</li>'
+                            );
+                            $ul.find('li:first').slideDown('fast',function(){
+                                jQuery(this).css('background', '#e5e5e5');
+                            })
+                            methods.fetchComments(topicData.topic_id, $ul.find('li:first'));
+                        },
+
+
+                        createCategory: function(parent_id, $element){
+                            var $dialog= jQuery('<div><label>title</label><input type="text"/><br/><label>description</label><textarea></textarea></div>').dialog({
+                                modal: true,
+                                title: "Category data:",
+                                buttons: {
+                                    "Create": function(){
+                                        var value = jQuery('input', this).val();
+                                        var text = jQuery('textarea', this).val();
+                                        jQuery.ajax({
+                                            url: '/category',
+                                            method: 'POST',
+                                            data: JSON.stringify({'parent_id': parent_id, 'title': value, 'description': text}),
+                                            processData: false,
+                                            contentType: 'application/json',
+                                            success: function (json) {
+                                                methods.fetchCategory(parent_id, $element.find('li:first'));
+                                                $dialog.dialog('close');
+                                            }
+                                        });
+                                    }
+                                }
+                            })
+                        },
+                        createTopic: function(category_id, $element){
+                            var $dialog= jQuery('<div><label>title</label><input type="text"/><br/><label>description</label><textarea></textarea></div>').dialog({
+                                modal: true,
+                                title: "Topic data:",
+                                buttons: {
+                                    "Create": function(){
+                                        var value = jQuery('input', this).val();
+                                        var text = jQuery('textarea', this).val();
+                                        jQuery.ajax({
+                                            url: '/topic',
+                                            method: 'POST',
+                                            data: JSON.stringify({'category_id': category_id, 'title': value, 'description': text}),
+                                            processData: false,
+                                            contentType: 'application/json',
+                                            success: function (json) {
+                                                methods.fetchCategory(category_id, $element.find('li:first'));
+                                                $dialog.dialog('close');
+                                            }
+                                        });
+                                    }
+                                }
+                            })
+                        },
+                        createComment: function(topic_id, $element){
+                            var $dialog= jQuery('<div><textarea></textarea></div>').dialog({
+                                modal: true,
+                                title: "Comment data:",
+                                buttons: {
+                                    "Create": function(){
+                                        var text = jQuery('textarea', this).val();
+                                        jQuery.ajax({
+                                            url: '/comment',
+                                            method: 'POST',
+                                            data: JSON.stringify({'topic_id': topic_id, 'description': text, 'kaas': 'kaas'}),
+                                            processData: false,
+                                            contentType: 'application/json',
+                                            success: function (json) {
+                                                methods.fetchComments(topic_id, $element.find('li:first'));
+                                                $dialog.dialog('close');
+                                            }
+                                        });
+                                    }
+                                }
+                            })
+                        },
+
+                    }
+
+                    $forum.on('click', '.createCategory', function(e){
+                        e.preventDefault();
+                        var $this = jQuery(this);
+                        var $element = $this.closest('li');
+                        var id = $element.data('category_id');
+                        methods.createCategory(id, $element.parent());
+                    });
+                    $forum.on('click', '.createTopic', function(e){
+                        e.preventDefault();
+                        var $this = jQuery(this);
+                        var $element = $this.closest('li');
+                        var id = $element.data('category_id');
+                        methods.createTopic(id, $element.parent());
+                    });
+                    $forum.on('click', '.createComment', function(e){
+                        e.preventDefault();
+                        var $this = jQuery(this);
+                        var $element = $this.closest('li');
+                        var id = $element.data('topic_id');
+                        methods.createComment(id, $element.parent());
+                    });
+
+                    jQuery.ajaxSetup({
+                        error: function( event, jqxhr, settings, thrownError){
+                            if(event.status == 422){
+                                // this is invalid formfield;
+                                var error = '';
+                                jQuery.each(event.responseJSON, function(k, v){
+                                   error += '<label>' + k + ':</label> ' + v + '<br />';
+                                });
+                                jQuery('<div>'+error+'</div>').dialog({
+                                    title: 'Please validate the following errors',
+                                    modal: true
+                                })
+                            }
+                        }
+                    });
+
+                    $forum.find('h3.branchName').html(defaults.branch_name);
+                    $forum.dialog({
+                        modal: true,
+                        title: 'Forum demo',
+                        width: 800,
+                        height: 1024
+                    })
+                    methods.authenticate();
+
+                };
+            })(jQuery, window, document);
+        </script>
+    </head>
+    <body>
+    <div id="forumDialog" style="display: none;">
+        <ul id="forumPosts">
+            <li class="category" data-category_id="0">
+                <h3 class="branchName">BranchName</h3>
+                <p>Simpel forum voorbeeld.</p>
+                <ul>
+
+                </ul>
+                <div class="controls">
+                    <button class="createCategory">New category</button>
+                    <button class="createTopic">New topic</button>
+                </div>
+            </li>
+        </ul>
+    </div>
+    </body>
+</html>
