@@ -16,7 +16,7 @@ $commands[]= 'mysqldump --defaults-extra-file=./.sqlpwd  --no-data '.$db['databa
 $commands[]= 'mysql --defaults-extra-file=./.sqlpwd -e "DROP DATABASE IF EXISTS ' . $db['database'] . '"';
 $commands[]= 'mysql --defaults-extra-file=./.sqlpwd  -e "CREATE DATABASE ' . $db['database'] . '"';
 $commands[]= 'mysql --defaults-extra-file=./.sqlpwd '.$db['database'].' < ./schema.sql';
-$commands[]= 'rm ./.sqlpwd ./schema.sql';
+$commands[]= 'rm ./.sqlpwd';
 
 foreach($commands as $command){
     $out=[];
