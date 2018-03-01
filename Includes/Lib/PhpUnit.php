@@ -3,6 +3,7 @@ namespace Lib;
 // removing this results in the deletion of the production database!!!
 define('PHPUNIT_RUNNING', true);  // do not remove!!!
 
+
 // Re-create a empty test database.
 $db = require('Includes/Config/Database.php');
 $commands =[];
@@ -16,7 +17,7 @@ $commands[]= 'mysqldump --defaults-extra-file=./.sqlpwd  --no-data '.$db['databa
 $commands[]= 'mysql --defaults-extra-file=./.sqlpwd -e "DROP DATABASE IF EXISTS ' . $db['database'] . '"';
 $commands[]= 'mysql --defaults-extra-file=./.sqlpwd  -e "CREATE DATABASE ' . $db['database'] . '"';
 $commands[]= 'mysql --defaults-extra-file=./.sqlpwd '.$db['database'].' < ./schema.sql';
-$commands[]= 'rm ./.sqlpwd';
+$commands[]= 'rm ./.sqlpwd schema.sql';
 
 foreach($commands as $command){
     $out=[];
@@ -35,3 +36,4 @@ require __DIR__ . '/../../vendor/autoload.php';
 ini_set('open_basedir', '/');
 
 Bootstrap::bootstrap();
+BaseModel::migrate();

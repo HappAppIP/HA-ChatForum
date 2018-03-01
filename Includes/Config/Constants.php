@@ -2,7 +2,7 @@
 
 const USER_TOKEN_TTL = 60; // minutes
 const DS = DIRECTORY_SEPARATOR;
-const DEBUG = true;
+const DEBUG = false;
 const RANDOM_SALT = '*YAS*DO239ehsbu7';
 const TOKEN_HEADER_FIELD = 'X-Authenticationtoken';
 
@@ -23,3 +23,4 @@ const VALIDATE_TYPE_ENUM = 'Enum value should be one of: ';
 const VALIDATE_TYPE_UNKNOWN = 'Unknown type validator ';
 
 
+const MIGRATION_DIR = '/Migrations';
