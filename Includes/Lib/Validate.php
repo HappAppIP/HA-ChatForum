@@ -155,6 +155,13 @@ class Validate{
                     $this->_throw();
                 }
                 break;
+            case('alpha'):
+                if(!ctype_alpha($parameters[$key])){
+                    unset($parameters[$key]);
+                    $this->_errors[$key] = VALIDATE_TYPE_ALPHA;
+                    $this->_throw();
+                }
+                break;
             default:
                 unset($parameters[$key]);
                 $this->_errors[$key] = VALIDATE_TYPE_UNKNOWN . htmlentities($validators['type']);

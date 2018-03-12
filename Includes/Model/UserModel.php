@@ -62,14 +62,22 @@ EOS;
             $r->closeCursor();
             return $return;
         }
+        $q= <<<EOS
+    SELECT * FROM userTokens WHERE token=?
+EOS;
+        $r = self::_query($q, [$token]);
+        if($r->rowCount() == 1) {
+            throw new \Exception("Token TTL reached", 403);
+        }
         throw new \Exception("Invalid token", 403);
     }
 
-    public function get($user_id){
+    public function get($ext_user_id){
         $Q=<<<EOS
 SELECT 
     u.forum_type,
-    u.user_name, 
+    u.user_name,
+    u.avatar_url, 
     co.company_name, 
     b.branch_name, 
     u.created_at,

@@ -50,14 +50,32 @@ class CommentController extends BaseController{
             'type' => 'int',
             'required' => false
         ],
-        'page_nr' => [
+        'last_timestamp' => [
             'type' => 'int',
             'required' => false
         ],
-        'page_size' => [
+        'first_timestamp' => [
             'type' => 'int',
             'required' => false
         ],
+        'limit_start' => [
+            'type' => 'int',
+            'required' => false,
+            'default' => 0
+        ],
+        'limit_size' => [
+            'type' => 'int',
+            'required' => false,
+            'max' => 200,
+            'default' => 2
+        ],
+        'order_by' => [
+            'type' => 'enum',
+            'enum' => ['asc', 'desc', 'ASC', 'DESC'],
+            'required' => false,
+            'default' => 'desc'
+        ]
+
     ];
 
     /**
@@ -99,7 +117,7 @@ class CommentController extends BaseController{
      */
     public function getIndexAction(){
         $parameters = $this->validate($this->getValues, $this->getData);
-        return CommentModel::get($parameters);
+        return CommentModel::get($parameters, $this->getUserCredentials('user_id'));
     }
 
     /**

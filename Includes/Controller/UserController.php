@@ -45,6 +45,11 @@ class UserController extends BaseController{
             'type' => 'enum',
             'enum' => ['chat', 'forum']
         ],
+        'avatar_url' => [
+            'required' => true,
+            'type' => 'varchar',
+            'allow_empty' => false
+        ]
     ];
 
     /**
@@ -73,6 +78,10 @@ class UserController extends BaseController{
         return $response;
     }
 
+    /**
+     * @return array
+     * @throws \Exception
+     */
     public function getAction(){
         $parameters = $this->validate($this->paramsGet, $this->getData);
         $response = UserModel::get($parameters['user_id']);

@@ -62,6 +62,29 @@ class CategoryController extends BaseController{
         ]
     ];
 
+    public $getOrCreateValues = [
+        'parent_id' =>  [
+            'type' => 'int',
+            'required' => false,
+            'default' => 0
+        ],
+        'title' => [
+          'type' => 'varchar',
+            'max_length' => 255,
+            'min_length' => 2,
+            'required' => false
+
+        ],
+        'description' => [
+          'type' => 'varchar',
+            'max_length' => 255,
+            'min_length' => 2,
+            'required' => true,
+            'allow_empty' => true
+
+        ]
+    ];
+
     /**
      * @return array
      * @throws \ErrorException
@@ -107,6 +130,19 @@ class CategoryController extends BaseController{
         $data = $this->validate($this->getValues, $this->getData);
         $result = CategoryModel::get($data['category_id'], $this->getUserCredentials('local_branch_id'));
         return $result;
+    }
+
+    /**
+     * get category by name
+     * This will create the category if it does not exists!!
+     */
+    public function postGetOrCreateAction(){
+        $data = $this->validate($this->getOrCreateValues, $this->postData);
+        $data['local_branch_id'] = $this->getUserCredentials('local_branch_id');
+        $data['token_id'] = $this->getUserCredentials('token_id');
+        $result = CategoryModel::getOrCreate($data);
+        return $result;
+
     }
 
 }
