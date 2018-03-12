@@ -218,7 +218,7 @@ class CommentModelTest extends TestCase{
         CommentModel::create($subcomment);
         CommentModel::create($subcomment);
 
-        $result = CommentModel::get(['topic_id' => 3]);
+        $result = CommentModel::get(['topic_id' => 3], 1);
 
         $this->assertCount(2, $result);
         $expected_values = [
@@ -232,9 +232,8 @@ class CommentModelTest extends TestCase{
             }
         }
 
-        $result = CommentModel::get(['comment_id' => 5]);
-
-        $this->assertCount(6, $result);
+        $result = CommentModel::get(['comment_id' => 5], 10);
+        $this->assertCount(9, $result);
         $this->assertEquals($result['comment_id'], 5);
         $this->assertEquals($result['topic_id'], 4);
         $this->assertEquals($result['description'], 'comment 2');

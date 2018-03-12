@@ -34,6 +34,7 @@ class CommentModel extends BaseModel{
     }
 
     public static function get(array $data, $userId){
+        $order_by = 'DESC';
         if(isset($data['comment_id'])){
             return self::getCommentById($data['comment_id'], $userId);
         }else{

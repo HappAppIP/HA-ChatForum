@@ -251,16 +251,12 @@ class TopicModelTest extends TestCase{
         CommentModel::create($subcomment);
 
         $result = TopicModel::get(3);
-        $this->assertCount(1, $result);
-        $expected_values = [
-            ['total_comments' => 2],
-        ];
+        $this->assertCount(9, $result);
+        $expected_values = ['total_comments' => 2];
 
         foreach($expected_values as $k => $v){
-            foreach($v as $key => $value){
-                $this->assertArrayHasKey($key, $result[$k]);
-                $this->assertEquals($value, $result[$k][$key]);
-            }
+                $this->assertArrayHasKey($k, $result);
+                $this->assertEquals($v, $result[$k]);
         }
 
 
