@@ -151,7 +151,8 @@ class Dispatcher
      */
     public function execute(){
         if(method_exists($this->_controller, $this->_actionName) === false) {
-            throw new \Exception(ACTION_NOT_FOUND, 404);
+
+            throw new \Exception(ACTION_NOT_FOUND . '(' . $this->_actionName . ')', 404);
         }
         $response = $this->_controller->{$this->_actionName}();
         if(is_array($response)) {

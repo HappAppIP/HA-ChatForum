@@ -55,6 +55,7 @@ SELECT
     COUNT(topic_id) AS total_topics,
     NULL AS total_comments,
     MAX(u.user_name) AS user_name,
+    MAX(u.avatar_url) AS avatar_url,
     MAX(co.company_name) AS company_name,
     MAX(t.created_at) AS last_topic,
     NULL as last_comment
@@ -76,6 +77,7 @@ UNION SELECT
     NULL AS total_topics,
     COUNT(c.comment_id) AS total_comments,
     MAX(u.user_name) AS user_name,
+    MAX(u.avatar_url) AS avatar_url,
     MAX(co.company_name) AS company_name,
     NULL AS last_topic,
     MAX(c.created_at) AS last_comment
@@ -89,5 +91,23 @@ ORDER BY type ASC, created_at DESC;
 EOS;
         $result = self::_query($Q, [$category_id, $localBranch_id,$category_id, $localBranch_id])->fetchall();
         return $result;
+    }
+
+    /**
+     * @param $data
+     * @return array
+     * @throws \ErrorException
+     */
+    public static function getOrCreate($data){
+        $row = self::fetchRow('SELECT category_id FROM categories WHERE title=? AND local_branch_id=?', [
+            $data['title'], $data['local_branch_id']
+        ]);
+        if($row===false){
+            $row['category_id'] = self::create($data);
+        }
+        $data = self::get($row['category_id'], $data['local_branch_id']);
+        $return['category_id'] = $row['category_id'];
+        $return['data'] = $data;
+        return $return;
     }
 }

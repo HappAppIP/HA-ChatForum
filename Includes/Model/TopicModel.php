@@ -39,11 +39,14 @@ class TopicModel extends BaseModel{
     public static function get($topic_id){
         $Q=<<<EOS
 SELECT 
+    t.topic_id,
     t.title,
     t.description,
     t.created_at,
     COUNT(comment_id) AS total_comments,
+    MAX(c.created_at) AS last_comment,
     user_name,
+    avatar_url,
     company_name
   FROM topics AS t
     JOIN userTokens AS u USING(token_id)
@@ -53,12 +56,27 @@ SELECT
   GROUP BY topic_id
   ORDER BY t.created_at DESC
 EOS;
-        $result = self::_query($Q, [$topic_id])->fetchall();
+        $result = self::fetchRow($Q, [$topic_id]);
         return $result;
     }
 
     public static function deleteByCategory($category_id)
     {
         return self::_delete('topics', 'category_id', $category_id);
+    }
+
+    /**
+     * @param $data
+     * @return array
+     * @throws \ErrorException
+     */
+    public static function getOrCreate($data){
+        $row = self::fetchRow('SELECT topic_id FROM topics WHERE title=? AND category_id=?', [
+            $data['title'], $data['category_id']
+        ]);
+        if($row===false){
+            $row['topic_id'] = self::create($data);
+        }
+        return self::get($row['topic_id']);
     }
 }

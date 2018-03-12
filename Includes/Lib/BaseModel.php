@@ -8,6 +8,11 @@ class BaseModel{
      */
     protected static $_db;
 
+    /**
+     * @var array
+     */
+    protected static $_dbConfig; // for debugging.
+
 
     /**
      * @return \PDO
@@ -15,6 +20,7 @@ class BaseModel{
     public static function getDb(){
         if(!isset(self::$_db)){
             $config = require('Config/Database.php');
+            self::$_dbConfig = $config;
             self::$_db = new \PDO('mysql:host=' . $config['host']. ';port=' . $config['port'] . ';dbname=' .$config['database'], $config['username'], $config['password']);
             self::$_db->setAttribute(\PDO::ATTR_ERRMODE,\PDO::ERRMODE_EXCEPTION);
             self::$_db->setAttribute(\PDO::ATTR_DEFAULT_FETCH_MODE, \PDO::FETCH_ASSOC);
@@ -34,6 +40,19 @@ class BaseModel{
         return $stmt;
     }
 
+    /**
+     * Returns 1 row (just 1!)
+     *
+     * @param $query
+     * @param array $arguments
+     * @return array
+     */
+    public static function fetchRow($query, array $arguments=[]){
+        $stmt = self::_query($query, $arguments);
+        $row = $stmt->fetch();
+        $stmt->closeCursor();
+        return $row;
+    }
     /**
      * @param array $data
      * @param $table
@@ -112,6 +131,79 @@ class BaseModel{
        $stmt->closeCursor();
        return $r;
 
+    }
+
+    /**
+     * Runs database migrations, handle with care!
+     *
+     */
+    public static function migrate(){
+        self::getDb();
+        if(DEBUG===true) {
+            echo 'Running migrations on: ';
+            var_dump(self::$_dbConfig);
+        }else{
+            echo 'Running migrations';
+        }
+        try{
+            try {
+                $row = self::fetchRow('SELECT `index`, fileName FROM migrations ORDER BY migration_id DESC LIMIT 0, 1');
+                $last_index = $row['index'];
+            }catch(\Exception $e){
+                if($e->getCode()=='42S02'){
+                    $last_index = 0;
+                }else{
+                    throw($e);
+                }
+            }
+            $files = array_slice(scandir('Migrations'), 2);
+            sort($files);
+            echo 'Last migration index: ' . $row['index'] . ' (' . $row['fileName'] . ')';
+            foreach($files as $file){
+                $parts = explode('_', $file);
+                if((int) $parts[0] > (int) $last_index){
+                    echo 'Executing file:'  . $file . "\n";
+                    self::execFile('Migrations/' . $file);
+                    self::_insert([
+                        'index' => $parts[0],
+                        'fileName' => $file
+                    ], 'migrations');
+                }
+            }
+
+        }catch(\Exception $e){
+            echo $e->getMessage();
+            exit(1);
+        }
+    }
+
+    /**
+     * @param $filePath
+     * @throws \Exception
+     */
+    public static function execFile($filePath){
+        if(!is_file($filePath)){
+            throw new \Exception('File "' . $filePath . '" does not exist"');
+        }
+        $db = require('Config/Database.php');
+        $commands =[];
+        $commands[]= 'echo "[mysql]             # NEEDED FOR RESTORE" >> ./.sqlpwd';
+        $commands[]= 'echo "user=' . $db['username'] . '" >> ./.sqlpwd';
+        $commands[]= 'echo "password=' . $db['password'] . '" >> ./.sqlpwd';
+        $commands[]= 'mysql --defaults-extra-file=./.sqlpwd '.$db['database'].' < ' . $filePath;
+        $commands[]= 'rm ./.sqlpwd';
+        foreach($commands as $command){
+            $out=[];
+            $return=0;
+            exec($command, $out, $return);
+            if($return==1){
+                echo 'FAILED: Recreating database:';
+                echo $command;
+                var_dump($out);
+                exec('rm ./.sqlpwd');
+                exit(1);
+            }
+        }
     }
 
 
