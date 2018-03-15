@@ -8,7 +8,7 @@ define('PHPUNIT_RUNNING', true);  // do not remove!!!
 $db = require('Includes/Config/Database.php');
 $commands =[];
 $commands[]= 'echo "[mysqldump]             # NEEDED FOR DUMP" > ./.sqlpwd';
-$commands[]= 'echo "user=' . $db['username'] . ' >> ./.sqlpwd';
+$commands[]= 'echo "user=' . $db['username'] . '" >> ./.sqlpwd';
 $commands[]= 'echo "password=' . $db['password'] . '" >> .sqlpwd';
 $commands[]= 'echo "[mysql]             # NEEDED FOR RESTORE" >> ./.sqlpwd';
 $commands[]= 'echo "user=' . $db['username'] . '" >> ./.sqlpwd';
