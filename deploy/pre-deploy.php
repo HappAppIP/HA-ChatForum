@@ -14,7 +14,7 @@ $test['username'] = getenv("JENKINS_DB_USER");
 $test['password'] = getenv("JENKINS_DB_PASSWORD");
 
 
-$fileName = realpath('../Includes/Config/Database.php');
+$fileName = realpath('./Includes/Config/Database.php');
 echo '*****************************' . "\n";
 echo $fileName;
 $configData = <<<EOS
