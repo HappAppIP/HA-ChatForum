@@ -15,8 +15,6 @@ $test['password'] = getenv("JENKINS_DB_PASSWORD");
 
 
 $fileName = realpath('./Includes/Config/Database.php');
-echo '*****************************' . "\n";
-echo $fileName;
 $configData = <<<EOS
 <?php
 if(defined('PHPUNIT_RUNNING') && PHPUNIT_RUNNING === true){
