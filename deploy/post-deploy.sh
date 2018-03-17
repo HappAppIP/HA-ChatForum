@@ -1,2 +1,4 @@
 #!/usr/bin/env bash
-php -f ./post-deploy.php
+BASEDIR=$(dirname "$0")
+
+php -f $BASEDIR"/post-deploy.php"
