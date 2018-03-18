@@ -1,9 +1,9 @@
 <?php
 // File used to manage simple database migrations.
 // This file should be executed just after deploy.
-
-require('../vendor/autoload.php');
-require_once('../Includes/Config/Constants.php');
+$dirName = realpath(dirname(__FILE__) . '/../');
+require($dirName . '/vendor/autoload.php');
+require_once($dirName . '/Includes/Config/Constants.php');
 Lib\Bootstrap::bootstrap();
 
 \Lib\BaseModel::migrate();
