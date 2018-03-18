@@ -156,7 +156,11 @@ class BaseModel{
                     throw($e);
                 }
             }
-            $files = array_slice(scandir('Migrations'), 2);
+            $path = dirname(__FILE_) . '/../../' . MIGRATION_DIR;
+            if(DEBUG===true){
+                echo 'Migration dir: ' . $path;
+            }
+            $files = array_slice(scandir($path), 2);
             sort($files);
             echo 'Last migration index: ' . $row['index'] . ' (' . $row['fileName'] . ')';
             foreach($files as $file){
