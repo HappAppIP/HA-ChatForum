@@ -140,10 +140,10 @@ class BaseModel{
     public static function migrate(){
         self::getDb();
         if(DEBUG===true) {
-            echo 'Running migrations on: ';
+            echo 'Running migrations on: '  . "\n";
             var_dump(self::$_dbConfig);
         }else{
-            echo 'Running migrations';
+            echo 'Running migrations' . "\n";
         }
         try{
             try {
@@ -159,11 +159,11 @@ class BaseModel{
             }
             $path = realpath(dirname(__FILE__) . '/../..' . MIGRATION_DIR);
             if(DEBUG===true){
-                echo 'Migration dir: ' . $path;
+                echo 'Migration dir: ' . $path  . "\n";
             }
             $files = array_slice(scandir($path), 2);
             sort($files);
-            echo 'Last migration index: ' . $row['index'] . ' (' . $row['fileName'] . ')';
+            echo 'Last migration index: ' . $row['index'] . ' (' . $row['fileName'] . ')'  . "\n";
             foreach($files as $file){
                 $parts = explode('_', $file);
                 if((int) $parts[0] > (int) $last_index){
@@ -190,7 +190,7 @@ class BaseModel{
         if(!is_file($filePath)){
             throw new \Exception('File "' . $filePath . '" does not exist"');
         }
-        $db = require(realpath(dirname(__FILE__) . '/../../') . 'Config/Database.php');
+        $db = require(realpath(dirname(__FILE__) . '/..') . '/Config/Database.php');
         $commands =[];
         $commands[]= 'echo "[mysql]             # NEEDED FOR RESTORE" >> ./.sqlpwd';
         $commands[]= 'echo "user=' . $db['username'] . '" >> ./.sqlpwd';
@@ -202,8 +202,8 @@ class BaseModel{
             $return=0;
             exec($command, $out, $return);
             if($return==1){
-                echo 'FAILED: Recreating database:';
-                echo $command;
+                echo 'FAILED: Recreating database:'  . "\n";
+                echo $command  . "\n";
                 var_dump($out);
                 exec('rm ./.sqlpwd');
                 exit(1);
