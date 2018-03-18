@@ -152,11 +152,12 @@ class BaseModel{
             }catch(\Exception $e){
                 if($e->getCode()=='42S02'){
                     $last_index = 0;
+                    $row = ['index' => 0, 'fileName' => '---'];
                 }else{
                     throw($e);
                 }
             }
-            $path = dirname(__FILE_) . '/../../' . MIGRATION_DIR;
+            $path = realpath(dirname(__FILE__) . '/../..' . MIGRATION_DIR);
             if(DEBUG===true){
                 echo 'Migration dir: ' . $path;
             }
@@ -167,10 +168,10 @@ class BaseModel{
                 $parts = explode('_', $file);
                 if((int) $parts[0] > (int) $last_index){
                     echo 'Executing file:'  . $file . "\n";
-                    self::execFile('Migrations/' . $file);
+                    self::execFile($path . '/' . $file);
                     self::_insert([
                         'index' => $parts[0],
-                        'fileName' => $file
+                        'fileName' => $path . '/' . $file
                     ], 'migrations');
                 }
             }
@@ -189,7 +190,7 @@ class BaseModel{
         if(!is_file($filePath)){
             throw new \Exception('File "' . $filePath . '" does not exist"');
         }
-        $db = require('Config/Database.php');
+        $db = require(realpath(dirname(__FILE__) . '/../../') . 'Config/Database.php');
         $commands =[];
         $commands[]= 'echo "[mysql]             # NEEDED FOR RESTORE" >> ./.sqlpwd';
         $commands[]= 'echo "user=' . $db['username'] . '" >> ./.sqlpwd';
