@@ -5,11 +5,10 @@ try{
     $dirName = realpath(dirname(__FILE__) . '/../');
     require($dirName . '/vendor/autoload.php');
     require_once($dirName . '/Includes/Config/Constants.php');
-    Lib\Bootstrap::bootstrap();
-
+    \Lib\Bootstrap::bootstrap();
     \Lib\BaseModel::migrate();
     exit(0);
 }catch(\Exception $e){
-    echo $e->getMessage();
+    echo $e->getMessage() . "\n";
     exit(1);
 }
