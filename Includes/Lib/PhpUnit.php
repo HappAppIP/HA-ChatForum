@@ -27,7 +27,7 @@ foreach($commands as $command){
         echo 'FAILED: Recreating database:';
         echo $command;
         var_dump($out);
-        exit;
+        exit(1);
     }
 }
 
@@ -37,3 +37,4 @@ ini_set('open_basedir', '/');
 
 Bootstrap::bootstrap();
 BaseModel::migrate();
+exit;
