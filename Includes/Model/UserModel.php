@@ -13,7 +13,7 @@ class UserModel extends BaseModel{
     public static function getUserToken(array $credentials){
         $token_ttl = USER_TOKEN_TTL;
         $q=<<<EOS
-SELECT token_id, token, local_branch_id, local_company_id FROM userTokens WHERE user_id=? AND forum_type=? AND token_ttl >= current_timestamp-($token_ttl*60)
+SELECT token_id, token, local_branch_id, local_company_id FROM userTokens WHERE user_id=? AND forum_type=? AND UNIX_TIMESTAMP(token_ttl) >= UNIX_TIMESTAMP()-($token_ttl*60)
 EOS;
         $r = self::_query($q, [$credentials['user_id'], $credentials['forum_type']]);
 
