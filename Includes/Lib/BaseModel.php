@@ -157,7 +157,7 @@ class BaseModel{
                     throw($e);
                 }
             }
-            $path = realpath(dirname(__FILE__) . '/../..' . MIGRATION_DIR);
+            $path = escapeshellarg(realpath(dirname(__FILE__) . '/../..' . MIGRATION_DIR));
             if(DEBUG===true){
                 echo 'Migration dir: ' . $path  . "\n";
             }
