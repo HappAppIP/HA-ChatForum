@@ -12,6 +12,7 @@
 require __DIR__ . '/../vendor/autoload.php';
 
 require_once('../Includes/Config/Constants.php');
+
 Lib\Bootstrap::bootstrap();
 
 $dispatcher = Lib\Dispatcher::getInstance();

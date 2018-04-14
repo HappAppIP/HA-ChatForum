@@ -10,7 +10,7 @@ class TopicController extends BaseController{
         'category_id' => [
             'type' => 'int',
             'required' => false,
-            'default' => 0
+            'default' => 1
         ],
         'title' => [
             'type' => 'varchar',
@@ -110,7 +110,7 @@ class TopicController extends BaseController{
      */
     public function getIndexAction(){
         $data = $this->validate($this->getValues, $this->getData);
-        return TopicModel::get($data);
+        return ['status' => true, 'data' => TopicModel::get($data['topic_id'], $this->getUserCredentials('local_branch_id'), $this->getUserCredentials('forum_type'))];
     }
 
     /**
@@ -122,8 +122,9 @@ class TopicController extends BaseController{
         $data = $this->validate($this->getOrCreateValues, $this->postData);
         $data['local_branch_id'] = $this->getUserCredentials('local_branch_id');
         $data['token_id'] = $this->getUserCredentials('token_id');
+        $data['forum_type'] = $this->getUserCredentials('forum_type');
         $result = TopicModel::getOrCreate($data);
-        return $result;
+        return ['status' => true, 'data' => $result];
     }
 
 }

@@ -16,7 +16,7 @@ class UserController extends BaseController{
             'max_length' => 255,
             'min_length' => 2,
         ],
-        'user_id' => [
+        'ext_user_id' => [
             'required' => true,
             'type' => 'int',
         ],
@@ -85,6 +85,6 @@ class UserController extends BaseController{
     public function getAction(){
         $parameters = $this->validate($this->paramsGet, $this->getData);
         $response = UserModel::get($parameters['user_id']);
-        return $response;
+        return ['status' => true, 'data' => $response];
     }
 }

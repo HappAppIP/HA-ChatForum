@@ -2,6 +2,7 @@
 namespace Model;
 
 use Lib\BaseModel;
+use Lib\Dispatcher;
 
 class UserModel extends BaseModel{
 
@@ -13,9 +14,10 @@ class UserModel extends BaseModel{
     public static function getUserToken(array $credentials){
         $token_ttl = USER_TOKEN_TTL;
         $q=<<<EOS
-SELECT token_id, token, local_branch_id, local_company_id FROM userTokens WHERE user_id=? AND forum_type=? AND UNIX_TIMESTAMP(token_ttl) >= UNIX_TIMESTAMP()-($token_ttl*60)
+SELECT token_id, token, local_branch_id, local_company_id, (UNIX_TIMESTAMP(token_ttl) >= UNIX_TIMESTAMP()-($token_ttl*60)) AS hasValidToken FROM userTokens WHERE ext_user_id=? AND forum_type=? 
 EOS;
-        $r = self::_query($q, [$credentials['user_id'], $credentials['forum_type']]);
+        Dispatcher::setDebugData('UserModel->getUserToken()', ['query' => $q, 'params' => [$credentials['ext_user_id'], $credentials['forum_type']]]);
+        $r = self::_query($q, [$credentials['ext_user_id'], $credentials['forum_type']]);
 
         if($r->rowCount() == 1){
             $data = $r->fetch();
@@ -25,10 +27,14 @@ EOS;
             $credentials['local_company_id']=self::_upsertCompany($credentials['ext_company_id'], $credentials['company_name'], $data['local_company_id']);
             unset($credentials['company_name'], $credentials['ext_company_id']);
 
+            if($data['hasValidToken']==0){
+                $data['token'] = $credentials['token'] = self::_generateToken($credentials['ext_user_id'], $credentials['forum_type']);;
+            }
             self::_update('userTokens', 'token_id', $data['token_id'], $credentials);
             $token = $data['token'];
         }else{
-            $token = self::_generateToken($credentials['user_id'], $credentials['forum_type']);
+
+            $token = self::_generateToken($credentials['ext_user_id'], $credentials['forum_type']);
             $credentials['token'] = $token;
 
             $credentials['local_branch_id'] = self::_upsertBranch($credentials['ext_branch_id'], $credentials['branch_name']);
@@ -37,9 +43,7 @@ EOS;
             $credentials['local_company_id'] = self::_upsertCompany($credentials['ext_company_id'], $credentials['company_name']);
             unset($credentials['company_name'], $credentials['ext_company_id']);
 
-            if(self::_update('userTokens', 'user_id', $credentials['user_id'], $credentials) == 0) {
-                self::_insert($credentials, 'userTokens');
-            }
+            self::_insert($credentials, 'userTokens');
         }
         $r->closeCursor();
         return $token;
@@ -91,7 +95,7 @@ FROM userTokens AS u
   LEFT JOIN categories AS c ON u.token_id=c.token_id
   LEFT JOIN topics AS t ON u.token_id=t.token_id
   LEFT JOIN comments AS com ON u.token_id=com.token_id
-WHERE u.user_id=?
+WHERE u.ext_user_id=?
 	GROUP BY u.token_id
 EOS;
         $result = self::_query($Q, [$ext_user_id]);
@@ -101,13 +105,13 @@ EOS;
     }
 
     /**
-     * @param $userId
+     * @param $ext_userId
      * @param $type
      * @return string
      * @throws \Exception
      */
-    protected static function _generateToken($userId, $type){
-       return bin2hex(random_bytes(4) . hash('sha256', $userId . $type . RANDOM_SALT) . random_bytes(4));
+    protected static function _generateToken($ext_userId, $type){
+       return bin2hex(random_bytes(4) . hash('sha256', $ext_userId . $type . RANDOM_SALT) . random_bytes(4));
     }
 
     /**

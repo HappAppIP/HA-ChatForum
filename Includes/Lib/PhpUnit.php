@@ -37,4 +37,3 @@ ini_set('open_basedir', '/');
 
 Bootstrap::bootstrap();
 BaseModel::migrate();
-exit;

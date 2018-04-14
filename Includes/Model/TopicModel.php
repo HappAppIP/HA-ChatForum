@@ -11,6 +11,7 @@ class TopicModel extends BaseModel{
      * @throws \ErrorException
      */
     public static function create($data){
+        print_r($data);
         return self::_insert($data, 'topics');
     }
 
@@ -34,9 +35,11 @@ class TopicModel extends BaseModel{
 
     /**
      * @param $topic_id
+     * @param $localBranchId
+     * @param $forumType
      * @return array
      */
-    public static function get($topic_id){
+    public static function get($topic_id, $localBranchId, $forumType){
         $Q=<<<EOS
 SELECT 
     t.topic_id,
@@ -47,16 +50,20 @@ SELECT
     MAX(c.created_at) AS last_comment,
     user_name,
     avatar_url,
-    company_name
+    company_name,
+    sub.c AS user_topics_created
+    
   FROM topics AS t
     JOIN userTokens AS u USING(token_id)
     JOIN companies AS co USING(local_company_id)
+    JOIN (SELECT COUNT(topic_id) AS c, token_id FROM topics GROUP BY token_id) AS sub ON sub.token_id = u.token_id
     LEFT JOIN comments AS c USING(topic_id)
-  WHERE topic_id=?
+    
+  WHERE topic_id=? AND u.local_branch_id=? AND u.forum_type=?
   GROUP BY topic_id
   ORDER BY t.created_at DESC
 EOS;
-        $result = self::fetchRow($Q, [$topic_id]);
+        $result = self::fetchRow($Q, [$topic_id, $localBranchId, $forumType]);
         return $result;
     }
 
@@ -71,12 +78,14 @@ EOS;
      * @throws \ErrorException
      */
     public static function getOrCreate($data){
-        $row = self::fetchRow('SELECT topic_id FROM topics WHERE title=? AND category_id=?', [
-            $data['title'], $data['category_id']
+        $row = self::fetchRow('SELECT topic_id FROM topics JOIN userTokens AS u USING(token_id) WHERE title=? AND category_id=? AND u.local_branch_id=? AND forum_type=?', [
+            $data['title'], $data['category_id'], $data['local_branch_id'], $data['forum_type']
         ]);
         if($row===false){
-            $row['topic_id'] = self::create($data);
+            $insertData = $data;
+            unset($insertData['forum_type']);
+            $row['topic_id'] = self::create($insertData);
         }
-        return self::get($row['topic_id']);
+        return self::get($row['topic_id'], $data['local_branch_id'], $data['forum_type']);
     }
 }

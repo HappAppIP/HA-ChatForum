@@ -59,6 +59,23 @@ class CategoryController extends BaseController{
         'category_id' =>  [
             'type' => 'int',
             'required' => true
+        ],
+        'limit_start' => [
+            'type' => 'int',
+            'required' => false,
+            'default' => 0
+        ],
+        'limit_size' => [
+            'type' => 'int',
+            'required' => false,
+            'max' => 200,
+            'default' => 2
+        ],
+        'order_by' => [
+            'type' => 'enum',
+            'enum' => ['asc', 'desc', 'ASC', 'DESC'],
+            'required' => false,
+            'default' => 'desc'
         ]
     ];
 
@@ -128,7 +145,8 @@ class CategoryController extends BaseController{
     public function getIndexAction()
     {
         $data = $this->validate($this->getValues, $this->getData);
-        $result = CategoryModel::get($data['category_id'], $this->getUserCredentials('local_branch_id'));
+        $result = CategoryModel::get($data['category_id'], $this->getUserCredentials('local_branch_id'), $this->getUserCredentials('forum_type'), $data['limit_start'], $data['limit_size'], $data['order_by']);
+        $result['status'] = true;
         return $result;
     }
 
@@ -140,8 +158,9 @@ class CategoryController extends BaseController{
         $data = $this->validate($this->getOrCreateValues, $this->postData);
         $data['local_branch_id'] = $this->getUserCredentials('local_branch_id');
         $data['token_id'] = $this->getUserCredentials('token_id');
+        $data['forum_type'] = $this->getUserCredentials('forum_type');
         $result = CategoryModel::getOrCreate($data);
-        return $result;
+        return ['status' => true, 'data' => $result];
 
     }
 

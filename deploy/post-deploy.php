@@ -7,7 +7,6 @@ try{
     require_once($dirName . '/Includes/Config/Constants.php');
     \Lib\Bootstrap::bootstrap();
     \Lib\BaseModel::migrate();
-    exit(0);
 }catch(\Exception $e){
     echo $e->getMessage() . "\n";
     exit(1);

@@ -67,7 +67,7 @@ class CommentController extends BaseController{
             'type' => 'int',
             'required' => false,
             'max' => 200,
-            'default' => 2
+            'default' => 20
         ],
         'order_by' => [
             'type' => 'enum',
@@ -109,7 +109,6 @@ class CommentController extends BaseController{
         unset($parameters['comment_id']);
         CommentModel::update($comment_id, $parameters);
         $this->addHeader(402, 'HTTP/1.0 No content');
-
     }
 
     /**
@@ -117,7 +116,9 @@ class CommentController extends BaseController{
      */
     public function getIndexAction(){
         $parameters = $this->validate($this->getValues, $this->getData);
-        return CommentModel::get($parameters, $this->getUserCredentials('user_id'));
+        $result = CommentModel::get($parameters, $this->getUserCredentials('ext_user_id'));
+        $result['status'] = true;
+        return $result;
     }
 
     /**

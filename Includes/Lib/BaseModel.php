@@ -122,15 +122,35 @@ class BaseModel{
     }
 
     /**
+     * Becarefull, this method overrides all the constraints (foreign keys)
      * @param $table
      * @return int
      */
     public static function _truncate($table){
-       $stmt = self::_query("TRUNCATE $table;");
+       $stmt = self::_query("SET FOREIGN_KEY_CHECKS = 0;  TRUNCATE $table; SET FOREIGN_KEY_CHECKS = 1;");
        $r = $stmt->rowCount();
        $stmt->closeCursor();
        return $r;
 
+    }
+
+    /**
+     * @todo this should just rerun all migrations ??
+     * @param bool $insertSystemRows
+     * @throws \Exception
+     */
+    public static function _truncateAll($insertSystemRows=true){
+        // Delete all records from db.
+        BaseModel::_truncate('comments');
+        BaseModel::_truncate('topics');
+        BaseModel::_truncate('categories');
+        BaseModel::_truncate('branches');
+        BaseModel::_truncate('userTokens');
+        BaseModel::_truncate('companies');
+
+        if($insertSystemRows===true) {
+            self::execFile(self::_getMigrationDirPath() . '/002_insert_system_records.sql');
+        }
     }
 
     /**
@@ -142,6 +162,9 @@ class BaseModel{
         if(DEBUG===true) {
             echo 'Running migrations on: '  . "\n";
             var_dump(self::$_dbConfig);
+            echo 'current directory   : ' . getcwd() . "\n";
+            echo 'open_basedir set too: ' . ini_get('open_basedir') . "\n";
+            echo 'include_path set too: ' . ini_get('include_path') . "\n";
         }else{
             echo 'Running migrations' . "\n";
         }
@@ -157,10 +180,8 @@ class BaseModel{
                     throw($e);
                 }
             }
-            $path = escapeshellarg(realpath(dirname(__FILE__) . '/../..' . MIGRATION_DIR));
-            if(DEBUG===true){
-                echo 'Migration dir: ' . $path  . "\n";
-            }
+            $path = self::_getMigrationDirPath();
+
             $files = array_slice(scandir($path), 2);
             sort($files);
             echo 'Last migration index: ' . $row['index'] . ' (' . $row['fileName'] . ')'  . "\n";
@@ -211,5 +232,19 @@ class BaseModel{
         }
     }
 
+    protected static function _getMigrationDirPath(){
+        $path = escapeshellarg(realpath(dirname(__FILE__) . '/../..' . MIGRATION_DIR));
+        // some differences exists between the test server and the local vagrant..
+        // this results in the full path working on test, but only the relative path working on dev.
+        // hence this check.
+        if(is_dir($path)===false){
+            // use a relative path
+            $path = str_replace('/', '', MIGRATION_DIR);
+        }
+        if(DEBUG===true){
+            echo 'Migration dir: ' . $path  . "\n";
+        }
+        return $path;
+    }
 
 }

@@ -64,11 +64,21 @@ class Dispatcher
     }
 
     /**
+     * @param null $key
+     * @return array|mixed
+     */
+    public static function getUserCredentials($key=null){
+        return self::getInstance()->getController()->getUserCredentials($key);
+    }
+
+    /**
      * @param $label
      * @param array $data
      */
     public static function setDebugData($label, array $data){
-        self::getInstance()->_debugData[$label] = $data;
+        if(DEBUG === true) {
+            self::getInstance()->_debugData[$label] = $data;
+        }
     }
 
     /**
@@ -127,6 +137,13 @@ class Dispatcher
         }
         $this->_controller = new $this->_controllerName($_REQUEST);
         return $this;
+    }
+
+    /**
+     * @return BaseController
+     */
+    public function getController(){
+        return $this->_controller;
     }
 
     /**

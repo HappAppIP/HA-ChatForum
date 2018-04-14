@@ -24,7 +24,9 @@ class Bootstrap{
         $includePath = realpath(dirname(__FILE__) . '/../');
         $openBaseDir = dirname($includePath);
         ini_set('include_path', $includePath);
-        ini_set('open_basedir', $openBaseDir . ':' . ini_get('open_basedir'));
+        $existing =  ini_get('open_basedir');
+        $existing = (isset($existing)&&strlen($existing)>0?':' . $existing:'');
+        ini_set('open_basedir', $openBaseDir . $existing);
         return $this;
     }
 

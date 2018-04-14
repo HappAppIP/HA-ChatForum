@@ -87,7 +87,7 @@ class BaseController
      * @param null $key
      * @return array|mixed
      */
-    protected function getUserCredentials($key = null)
+    public function getUserCredentials($key = null)
     {
         if ($key === null) {
             return $this->_userCredentials;

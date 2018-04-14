@@ -2,6 +2,7 @@
 namespace Model;
 
 use Lib\BaseModel;
+use Lib\Dispatcher;
 
 class CommentModel extends BaseModel{
 
@@ -70,7 +71,8 @@ SELECT
     c.description, 
     c.created_at,
     UNIX_TIMESTAMP(c.created_at) created_timestamp,
-    u.user_id=? AS isPostOwner
+    COALESCE((SELECT COUNT(ext_user_id) FROM topics WHERE ext_user_id=?)) AS user_topics_created,
+    u.ext_user_id=? AS isPostOwner
 FROM comments AS c
   JOIN userTokens AS u USING(token_id)
   JOIN companies AS co USING(local_company_id)
@@ -78,7 +80,7 @@ WHERE c.comment_id = ?
   ORDER BY c.created_at DESC
 EOS;
 
-        $result = self::_query($query, [$userId, $commentId]);
+        $result = self::_query($query, [$userId, $userId, $commentId]);
         $data = $result->fetch();
         $result->closeCursor();
         return $data;
@@ -104,6 +106,8 @@ EOS;
 
             $filters_clause = 'AND ' . implode(' AND ', $stack);
         }
+
+
         $query=<<<EOS
 SELECT 
     c.comment_id, 
@@ -114,18 +118,40 @@ SELECT
     c.description, 
     c.created_at,
     UNIX_TIMESTAMP(c.created_at) created_timestamp,
-    u.user_id=? AS isPostOwner
+    (SELECT COUNT(ext_user_id) FROM topics AS t WHERE t.token_id=u.token_id GROUP BY ext_user_id) AS user_topics_created,
+    u.ext_user_id=? AS isPostOwner
 FROM comments AS c
   JOIN userTokens AS u USING(token_id)
   JOIN companies AS co USING(local_company_id)
 WHERE c.topic_id = ? $filters_clause
+  GROUP BY c.comment_id
   ORDER BY c.created_at $order_by
   LIMIT $limit[0], $limit[1]
 EOS;
 
+        $queryCount =<<<EOS
+SELECT 
+    COUNT(c.comment_id) AS c
+FROM comments AS c
+  JOIN userTokens AS u USING(token_id)
+  JOIN companies AS co USING(local_company_id)
+WHERE c.topic_id = ? $filters_clause
+EOS;
+        $paramsCount = $params;
+        array_shift($paramsCount);
+        Dispatcher::setDebugData('CommentModel->getCommentsByTopicId()', [
+            'query' => $query,
+            'query_params' => $params,
+            'query_count' => $queryCount,
+            'count_params' => $paramsCount
+        ]);
         $result = self::_query($query, $params);
-        $data = $result->fetchAll();
+        $return['data'] = $result->fetchAll();
+        $return['limit_start'] = $limit[0];
+        $return['limit_size'] = $limit[1];
+        $return['total_records'] = self::_query($queryCount, $paramsCount)->fetch()['c'];
         $result->closeCursor();
-        return $data;
+
+        return $return;
     }
 }

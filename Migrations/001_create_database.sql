@@ -34,44 +34,6 @@ CREATE TABLE `branches` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Table structure for table `categories`
---
-
-DROP TABLE IF EXISTS `categories`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `categories` (
-  `category_id` int(11) unsigned NOT NULL AUTO_INCREMENT,
-  `token_id` int(11) unsigned DEFAULT NULL,
-  `local_branch_id` int(11) unsigned DEFAULT NULL,
-  `parent_id` int(11) unsigned DEFAULT '0',
-  `title` varchar(255) DEFAULT NULL,
-  `description` text,
-  `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
-  `updated_at` timestamp NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
-  PRIMARY KEY (`category_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Table structure for table `comments`
---
-
-DROP TABLE IF EXISTS `comments`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `comments` (
-  `comment_id` int(11) unsigned NOT NULL AUTO_INCREMENT,
-  `topic_id` int(11) unsigned DEFAULT NULL,
-  `token_id` int(11) unsigned DEFAULT NULL,
-  `description` text,
-  `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
-  `updated_at` timestamp NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
-  PRIMARY KEY (`comment_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
 -- Table structure for table `companies`
 --
 
@@ -89,6 +51,61 @@ CREATE TABLE `companies` (
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
+
+DROP TABLE IF EXISTS `userTokens`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `userTokens` (
+  `token_id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `forum_type` ENUM('FORUM', 'CHAT', 'SYSTEM') DEFAULT NULL,
+  `local_branch_id` int(11) unsigned NOT NULL,
+  `local_company_id` int(11) unsigned NOT NULL,
+  `ext_user_id` int(11) unsigned NOT NULL,
+  `user_name` varchar(255) DEFAULT NULL,
+  `avatar_url` VARCHAR(255)  NULL  DEFAULT NULL,
+  `token` varchar(255) DEFAULT NULL,
+  `token_ttl` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`token_id`),
+  UNIQUE `usertokens__unique_index`(`forum_type`, `ext_user_id`),
+  CONSTRAINT fk_usertokens__local_branch_id
+    FOREIGN KEY (local_branch_id) REFERENCES branches(local_branch_id)
+    ON UPDATE CASCADE
+    ON DELETE CASCADE,
+  CONSTRAINT fk_usertokens__local_company_id
+    FOREIGN KEY (local_company_id) REFERENCES companies(local_company_id)
+    ON UPDATE CASCADE
+    ON DELETE CASCADE
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
+--
+-- Table structure for table `categories`
+--
+
+DROP TABLE IF EXISTS `categories`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `categories` (
+  `category_id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `token_id` int(11) unsigned NOT NULL ,
+  `local_branch_id` int(11) unsigned DEFAULT NULL,
+  `parent_id` int(11) unsigned DEFAULT '0',
+  `title` varchar(255) DEFAULT NULL,
+  `description` text,
+  `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` timestamp NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`category_id`),
+  CONSTRAINT fk_categories__local_branch_id
+    FOREIGN KEY (local_branch_id) REFERENCES branches(local_branch_id)
+    ON UPDATE CASCADE
+    ON DELETE CASCADE,
+  CONSTRAINT fk_categories__token_id
+    FOREIGN KEY (token_id) REFERENCES userTokens(token_id)
+    ON UPDATE CASCADE
+    ON DELETE CASCADE
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+
 --
 -- Table structure for table `topics`
 --
@@ -98,36 +115,62 @@ DROP TABLE IF EXISTS `topics`;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `topics` (
   `topic_id` int(11) unsigned NOT NULL AUTO_INCREMENT,
-  `category_id` int(11) DEFAULT NULL,
-  `token_id` int(11) DEFAULT NULL,
-  `local_branch_id` int(11) DEFAULT NULL,
+  `category_id` int(11) unsigned NOT NULL,
+  `token_id` int(11) unsigned NOT NULL,
+  `local_branch_id` int(11) unsigned NOT NULL,
   `title` varchar(255) DEFAULT NULL,
   `description` text,
   `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
   `updated_at` timestamp NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
-  PRIMARY KEY (`topic_id`)
+  PRIMARY KEY (`topic_id`),
+  CONSTRAINT fk_topics__local_branch_id
+  FOREIGN KEY (local_branch_id) REFERENCES branches(local_branch_id)
+    ON UPDATE CASCADE
+    ON DELETE CASCADE,
+  CONSTRAINT fk_topics__category_id
+    FOREIGN KEY (category_id) REFERENCES categories(category_id)
+    ON UPDATE CASCADE
+    ON DELETE CASCADE,
+  CONSTRAINT fk_topics__token_id
+    FOREIGN KEY (token_id) REFERENCES userTokens(token_id)
+    ON UPDATE CASCADE
+    ON DELETE CASCADE
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `comments`
+--
+
+DROP TABLE IF EXISTS `comments`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `comments` (
+  `comment_id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `topic_id` int(11) unsigned DEFAULT NULL,
+  `token_id` int(11) unsigned DEFAULT NULL,
+  `description` text,
+  `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` timestamp NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`comment_id`),
+  CONSTRAINT fk_comments__topic_id
+    FOREIGN KEY (topic_id) REFERENCES topics(topic_id)
+    ON UPDATE CASCADE
+    ON DELETE CASCADE,
+  CONSTRAINT fk_comments__token_id
+    FOREIGN KEY (token_id) REFERENCES userTokens(token_id)
+    ON UPDATE CASCADE
+    ON DELETE CASCADE
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+
 
 --
 -- Table structure for table `userTokens`
 --
 
-DROP TABLE IF EXISTS `userTokens`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `userTokens` (
-  `token_id` int(11) unsigned NOT NULL AUTO_INCREMENT,
-  `forum_type` varchar(255) DEFAULT NULL,
-  `local_branch_id` int(11) DEFAULT NULL,
-  `local_company_id` int(11) DEFAULT NULL,
-  `user_id` int(11) DEFAULT NULL,
-  `user_name` varchar(255) DEFAULT NULL,
-  `token` varchar(255) DEFAULT NULL,
-  `token_ttl` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-  `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
-  PRIMARY KEY (`token_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
+
 
 
 DROP TABLE IF EXISTS `migrations`;
