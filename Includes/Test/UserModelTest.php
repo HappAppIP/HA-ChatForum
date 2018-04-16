@@ -94,7 +94,7 @@ EOS;
 
 
         // Test regeneration of token without re-creating a record.
-        $rowcount = BaseModel::_update('userTokens', 'token', $token, ['token_ttl' => '1970-01-01 00:00:01']);
+        $rowcount = BaseModel::_update('userTokens', 'token', $token, ['token_ttl' => '1970-01-01 00:01']);
         $this->assertEquals(1, $rowcount, 'rowcount does not work on update');
 
         $token_4 = UserModel::getUserToken($credentials);
