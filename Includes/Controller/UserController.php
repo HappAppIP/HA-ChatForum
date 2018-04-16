@@ -56,7 +56,7 @@ class UserController extends BaseController{
      * @var array
      */
     public $paramsGet=[
-      'user_id' => [
+      'ext_user_id' => [
           'type' => 'int',
           'required' => true
       ]
@@ -84,7 +84,7 @@ class UserController extends BaseController{
      */
     public function getAction(){
         $parameters = $this->validate($this->paramsGet, $this->getData);
-        $response = UserModel::get($parameters['user_id']);
+        $response = UserModel::get($parameters['ext_user_id']);
         return ['status' => true, 'data' => $response];
     }
 }

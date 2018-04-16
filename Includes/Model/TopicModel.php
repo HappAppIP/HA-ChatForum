@@ -11,7 +11,6 @@ class TopicModel extends BaseModel{
      * @throws \ErrorException
      */
     public static function create($data){
-        print_r($data);
         return self::_insert($data, 'topics');
     }
 
