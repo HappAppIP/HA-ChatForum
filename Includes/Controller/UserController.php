@@ -48,7 +48,7 @@ class UserController extends BaseController{
         'avatar_url' => [
             'required' => true,
             'type' => 'varchar',
-            'allow_empty' => false
+            'allow_empty' => true // not implemented in dashboard.
         ]
     ];
 

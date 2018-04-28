@@ -2,7 +2,7 @@
 
 const USER_TOKEN_TTL = 120; // minutes
 const DS = DIRECTORY_SEPARATOR;
-const DEBUG = true;
+const DEBUG = false;
 const RANDOM_SALT = '*YAS*DO239ehsbu7';
 const TOKEN_HEADER_FIELD = 'X-Authenticationtoken';
 

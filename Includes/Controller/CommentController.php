@@ -2,6 +2,7 @@
 namespace Controller;
 
 use Lib\BaseController;
+use Lib\Dispatcher;
 use Model\CommentModel;
 
 class CommentController extends BaseController{

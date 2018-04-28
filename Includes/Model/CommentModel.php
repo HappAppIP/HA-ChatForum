@@ -42,6 +42,7 @@ class CommentModel extends BaseModel{
             $filters = [];
             if(isset($data['order_by'])){
                 $order_by = (strtoupper($data['order_by'])=='ASC'?'ASC':'DESC');
+
                 unset($data['order_by']);
             }
             $limit = [$data['limit_start'] ?? 0, $data['limit_size'] ?? 100];
@@ -140,6 +141,7 @@ EOS;
         $paramsCount = $params;
         array_shift($paramsCount);
         Dispatcher::setDebugData('CommentModel->getCommentsByTopicId()', [
+            'order_by' => $order_by,
             'query' => $query,
             'query_params' => $params,
             'query_count' => $queryCount,
