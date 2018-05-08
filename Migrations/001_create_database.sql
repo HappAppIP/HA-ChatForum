@@ -43,14 +43,50 @@ DROP TABLE IF EXISTS `companies`;
 CREATE TABLE `companies` (
   `local_company_id` int(11) unsigned NOT NULL AUTO_INCREMENT,
   `ext_company_id` int(11) unsigned DEFAULT NULL,
+  `local_branch_id` int(11) unsigned NOT NULL,
   `company_name` varchar(255) DEFAULT NULL,
   `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
   `updated_at` timestamp NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`local_company_id`),
-  UNIQUE KEY `company_id_ext` (`ext_company_id`)
+  UNIQUE KEY `company_id_ext` (`ext_company_id`),
+  UNIQUE KEY `company_name_branch_id` (`company_name`, `local_branch_id`),
+  CONSTRAINT fk_companies_branch_id
+    FOREIGN KEY (local_branch_id) REFERENCES branches(local_branch_id)
+    ON UPDATE CASCADE
+    ON DELETE CASCADE
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
+
+--
+-- Table structure for table `offices`
+--
+
+
+DROP TABLE IF EXISTS `offices`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `offices` (
+  `local_office_id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `ext_office_id` int(11) unsigned DEFAULT NULL,
+  `local_company_id` int(11) unsigned NOT NULL,
+  `local_branch_id` int(11) unsigned NOT NULL,
+  `office_name` int(11) unsigned NULL,
+  `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` timestamp NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`local_office_id`),
+  UNIQUE KEY(`ext_office_id`),
+  UNIQUE KEY `office_unique_name_local_branch_id` (`office_name`, `local_company_id`),
+  CONSTRAINT fk_offices_branch_id
+    FOREIGN KEY (local_branch_id) REFERENCES branches(local_branch_id)
+    ON UPDATE CASCADE
+    ON DELETE CASCADE,
+  CONSTRAINT fk_offices_company_id
+  FOREIGN KEY (local_company_id) REFERENCES companies(local_company_id)
+    ON UPDATE CASCADE
+    ON DELETE CASCADE
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
 
 DROP TABLE IF EXISTS `userTokens`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
@@ -60,6 +96,7 @@ CREATE TABLE `userTokens` (
   `forum_type` ENUM('FORUM', 'CHAT', 'SYSTEM') DEFAULT NULL,
   `local_branch_id` int(11) unsigned NOT NULL,
   `local_company_id` int(11) unsigned NOT NULL,
+  `local_office_id` int(11) unsigned NOT NULL,
   `ext_user_id` int(11) unsigned NOT NULL,
   `user_name` varchar(255) DEFAULT NULL,
   `avatar_url` VARCHAR(255)  NULL  DEFAULT NULL,
@@ -74,6 +111,10 @@ CREATE TABLE `userTokens` (
     ON DELETE CASCADE,
   CONSTRAINT fk_usertokens__local_company_id
     FOREIGN KEY (local_company_id) REFERENCES companies(local_company_id)
+    ON UPDATE CASCADE
+    ON DELETE CASCADE,
+  CONSTRAINT fk_userTokens_office_id
+    FOREIGN KEY (local_office_id) REFERENCES offices(local_branch_id)
     ON UPDATE CASCADE
     ON DELETE CASCADE
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
