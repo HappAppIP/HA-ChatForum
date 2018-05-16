@@ -4,7 +4,62 @@ namespace Model;
 use Lib\BaseModel;
 use Lib\Dispatcher;
 
+/**
+ * Class UserModel
+ * @package Model
+ */
 class UserModel extends BaseModel{
+
+    /**
+     * @var null
+     */
+    private static $_currentUserData = null;
+
+    /**
+     * @param null $key
+     * @return mixed
+     */
+    public static function getCurrentUserData($key=null){
+        if ($key === null) {
+            return self::$_currentUserData;
+        }
+        return self::$_currentUserData[$key];
+    }
+
+    /**
+     * @param $credentials
+     */
+    public static function setCurrentUserData($credentials){
+        self::$_currentUserData=$credentials;
+    }
+
+    /**
+     * @param $localBranchId
+     * @param null $localCompanyId
+     * @param null $localOfficeId
+     * @return bool
+     * @throws \Exception
+     *
+     */
+    public static function isAllowed($localBranchId, $localCompanyId=null, $localOfficeId=null){
+        if(self::getCurrentUserData('branch_restricted')===true){
+            if(self::getCurrentUserData('local_branch_id') != $localBranchId){
+                throw new \Exception(AUTH_INVALID_BRANCH, 403);
+            }
+        }
+        if(self::getCurrentUserData('company_restricted')===true){
+            if(self::getCurrentUserData('local_company_id') != $localCompanyId){
+                throw new \Exception(AUTH_INVALID_COMPANY, 403);
+            }
+        }
+        if(self::getCurrentUserData('office_restricted')===true){
+            if(self::getCurrentUserData('local_office_id') != $localOfficeId){
+                throw new \Exception(AUTH_INVALID_OFFICE, 403);
+            }
+        }
+        return true;
+
+    }
 
     /**
      * @param array $credentials
@@ -14,7 +69,7 @@ class UserModel extends BaseModel{
     public static function getUserToken(array $credentials){
         $token_ttl = USER_TOKEN_TTL;
         $q=<<<EOS
-SELECT token_id, token, local_branch_id, local_company_id, (UNIX_TIMESTAMP(token_ttl) >= UNIX_TIMESTAMP()-($token_ttl*60)) AS hasValidToken FROM userTokens WHERE ext_user_id=? AND forum_type=? 
+SELECT token_id, token, local_branch_id, local_company_id, local_office_id, (UNIX_TIMESTAMP(token_ttl) >= UNIX_TIMESTAMP()-($token_ttl*60)) AS hasValidToken FROM userTokens WHERE ext_user_id=? AND forum_type=? 
 EOS;
         Dispatcher::setDebugData('UserModel->getUserToken()', ['query' => $q, 'params' => [$credentials['ext_user_id'], $credentials['forum_type']]]);
         $r = self::_query($q, [$credentials['ext_user_id'], $credentials['forum_type']]);
@@ -24,9 +79,15 @@ EOS;
             $credentials['local_branch_id'] = self::_upsertBranch($credentials['ext_branch_id'], $credentials['branch_name'], $data['local_branch_id']);
             unset($credentials['branch_name'], $credentials['ext_branch_id']);
 
-            $credentials['local_company_id']=self::_upsertCompany($credentials['ext_company_id'], $credentials['company_name'], $data['local_company_id']);
+            $credentials['local_company_id']=self::_upsertCompany($credentials['ext_company_id'], $credentials['company_name'], $credentials['local_branch_id'], $data['local_company_id']);
             unset($credentials['company_name'], $credentials['ext_company_id']);
 
+            $credentials['local_office_id']=self::_upsertOffice($credentials['ext_office_id'], $credentials['office_name'], $data['local_office_id']);
+            unset($credentials['office_name'], $credentials['ext_office_id']);
+
+            self::_upsertAcls($credentials['office_restricted'], $credentials['company_restricted'], $credentials['branch_restricted'], $data['token_id']);
+
+            unset($credentials['office_restricted'], $credentials['company_restricted'], $credentials['branch_restricted']);
             if($data['hasValidToken']==0){
                 $data['token'] = $credentials['token'] = self::_generateToken($credentials['ext_user_id'], $credentials['forum_type']);;
             }
@@ -40,10 +101,18 @@ EOS;
             $credentials['local_branch_id'] = self::_upsertBranch($credentials['ext_branch_id'], $credentials['branch_name']);
             unset($credentials['branch_name'], $credentials['ext_branch_id']);
 
-            $credentials['local_company_id'] = self::_upsertCompany($credentials['ext_company_id'], $credentials['company_name']);
+            $credentials['local_company_id'] = self::_upsertCompany($credentials['ext_company_id'], $credentials['company_name'], $credentials['local_branch_id']);
             unset($credentials['company_name'], $credentials['ext_company_id']);
 
-            self::_insert($credentials, 'userTokens');
+            $credentials['local_office_id']=self::_upsertOffice($credentials['ext_office_id'], $credentials['office_name'], $credentials['local_company_id']);
+            unset($credentials['office_name'], $credentials['ext_office_id']);
+
+            $acls = $credentials;
+            unset($credentials['office_restricted'], $credentials['company_restricted'], $credentials['branch_restricted']);
+            $tokenId = self::_insert($credentials, 'userTokens');
+
+
+            self::_upsertAcls($acls['office_restricted'], $acls['company_restricted'], $acls['branch_restricted'], $tokenId);
         }
         $r->closeCursor();
         return $token;
@@ -58,12 +127,13 @@ EOS;
     public static function authenticateToken($token){
         $token_ttl = USER_TOKEN_TTL;
         $q= <<<EOS
-    SELECT * FROM userTokens WHERE token=? AND UNIX_TIMESTAMP(token_ttl) >= UNIX_TIMESTAMP()-($token_ttl*60)
+    SELECT * FROM userTokens JOIN tokenAcls USING(token_id) WHERE token=? AND UNIX_TIMESTAMP(token_ttl) >= UNIX_TIMESTAMP()-($token_ttl*60)
 EOS;
         $r = self::_query($q, [$token]);
         if($r->rowCount() == 1) {
             $return = $r->fetch();
             $r->closeCursor();
+            self::setCurrentUserData($return);
             return $return;
         }
         $q= <<<EOS
@@ -76,13 +146,22 @@ EOS;
         throw new \Exception("Invalid token", 403);
     }
 
-    public function get($ext_user_id){
+
+    /**
+     * @param $ext_user_id
+     * @throws \Exception (ACL)
+     * @return array
+     */
+    public static function get($ext_user_id){
         $Q=<<<EOS
 SELECT 
     u.forum_type,
     u.user_name,
     u.avatar_url, 
     co.company_name, 
+    u.local_branch_id,
+    u.local_company_id,
+    u.local_office_id,
     b.branch_name, 
     u.created_at,
     u.token_ttl AS last_login,
@@ -101,6 +180,7 @@ EOS;
         $result = self::_query($Q, [$ext_user_id]);
         $data = $result->fetchall();
         $result->closeCursor();
+        self::isAllowed($data['local_branch_id'], $data['local_company_id'], $data['local_office_id']);
         return $data;
     }
 
@@ -151,25 +231,27 @@ EOS;
     /**
      * @param $extCompanyId
      * @param $extCompanyName
+     * @param $localBranchId
      * @param null $companyIdLocal
-     * @return null|string -> lastInsertId()
+     * @return true
      * @throws \ErrorException
      */
-    protected static function _upsertCompany($extCompanyId, $extCompanyName, $companyIdLocal=null){
+    protected static function _upsertCompany($extCompanyId, $extCompanyName, $localBranchId, $companyIdLocal=null){
         if(isset($companyIdLocal)){
-            self::_update('companies', 'local_company_id', $companyIdLocal, ['ext_company_id' => $extCompanyId, 'company_name' => $extCompanyName]);
+            self::_update('companies', 'local_company_id', $companyIdLocal, ['ext_company_id' => $extCompanyId, 'company_name' => $extCompanyName, 'local_branch_id' => $localBranchId]);
             return $companyIdLocal;
         }
         $q=<<<EOS
 INSERT INTO companies
-    (ext_company_id, company_name)
+    (ext_company_id, company_name, local_branch_id)
 VALUES
-    (?, ?)
+    (?, ?, ?)
 ON DUPLICATE KEY UPDATE
     ext_company_id = ?,
-    company_name = ?
+    company_name = ?,
+    local_branch_id =?
 EOS;
-        $result = self::_query($q, [$extCompanyId, $extCompanyName, $extCompanyId, $extCompanyName]);
+        $result = self::_query($q, [$extCompanyId, $extCompanyName, $localBranchId, $extCompanyId, $extCompanyName, $localBranchId]);
         $result->closeCursor();
         $lastInsertId = self::getDb()->lastInsertId();
         if($lastInsertId > 0){
@@ -181,6 +263,62 @@ EOS;
         return $id;
     }
 
+    /**
+     * @param $extOfficeId
+     * @param $officeName
+     * @param $localCompanyId
+     * @param null $localOfficeId
+     * @return null|string
+     * @throws \ErrorException
+     */
+    protected function _upsertOffice($extOfficeId, $officeName, $localCompanyId, $localOfficeId=null){
+        if(isset($localOfficeId)){
+            self::_update('offices', 'local_office_id', $localOfficeId, ['ext_office_id' => $extOfficeId, 'office_name' => $officeName, 'local_company_id' => $localCompanyId]);
+            return $localOfficeId;
+        }
+        $q=<<<EOS
+INSERT INTO offices
+    (ext_office_id, office_name, local_company_id)
+VALUES
+    (?, ?, ?)
+ON DUPLICATE KEY UPDATE
+    ext_office_id = ?,
+    office_name = ?,
+    local_office_id =?
+EOS;
+        $result = self::_query($q, [$extOfficeId, $officeName, $localCompanyId, $extOfficeId, $officeName, $localCompanyId]);
+        $result->closeCursor();
+        $lastInsertId = self::getDb()->lastInsertId();
+        if($lastInsertId > 0){
+            return $lastInsertId;
+        }
+        $result = self::_query('SELECT local_office_id FROM offices WHERE ext_office_id=?', [$extOfficeId]);
+        $id = $result->fetch()['local_office_id'];
+        $result->closeCursor();
+        return $id;
+    }
 
-
+    /**
+     * @param $officeRestricted
+     * @param $companyRestricted
+     * @param $branchRestricted
+     * @param $tokenId
+     * @return bool
+     */
+    protected static function _upsertAcls($officeRestricted, $companyRestricted, $branchRestricted, $tokenId)
+    {
+        $q = <<<EOS
+INSERT INTO tokenAcls
+    (token_id, office_restricted, company_restricted, branch_restricted)
+VALUES
+    (?, ?,?,?)
+ON DUPLICATE KEY UPDATE
+    office_restricted = ?,
+    company_restricted = ?,
+    branch_restricted = ?
+EOS;
+        $result = self::_query($q, [$tokenId, $officeRestricted, $companyRestricted, $branchRestricted, $officeRestricted, $companyRestricted, $branchRestricted]);
+        $result->closeCursor();
+        return true;
+    }
 }

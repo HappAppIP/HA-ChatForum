@@ -147,6 +147,8 @@ class BaseModel{
         BaseModel::_truncate('branches');
         BaseModel::_truncate('userTokens');
         BaseModel::_truncate('companies');
+        BaseModel::_truncate('offices');
+        BaseModel::_truncate('tokenAcls');
 
         if($insertSystemRows===true) {
             self::execFile(self::_getMigrationDirPath() . '/002_insert_system_records.sql');
@@ -245,6 +247,27 @@ class BaseModel{
             echo 'Migration dir: ' . $path  . "\n";
         }
         return $path;
+    }
+
+
+    /**
+     * @param string $userTokenTablePrefix
+     * @return string
+     *
+     * We can add forum type here!
+     */
+    protected static function getACLWhere($userTokenTablePrefix = 'u'){
+        $forum_type = ' ' . $userTokenTablePrefix .'.forum_type="' . Dispatcher::getUserCredentials('forum_type') . '"';
+        if(Dispatcher::getUserCredentials('office_restricted') === true){
+            return $forum_type . ' AND ' . $userTokenTablePrefix . '.local_office_id=' . (int) Dispatcher::getUserCredentials('local_office_id');
+         }
+        if(Dispatcher::getUserCredentials('company_restricted') === true){
+            return $forum_type . ' AND ' . $userTokenTablePrefix . '.local_company_id=' . (int) Dispatcher::getUserCredentials('local_company_id');
+        }
+        if(Dispatcher::getUserCredentials('branch_restricted') === true){
+            return $forum_type . ' AND ' . $userTokenTablePrefix . '.local_branch_id=' . (int) Dispatcher::getUserCredentials('local_branch_id');
+        }
+        return $forum_type;
     }
 
 }

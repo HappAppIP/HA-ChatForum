@@ -68,7 +68,7 @@ class Dispatcher
      * @return array|mixed
      */
     public static function getUserCredentials($key=null){
-        return self::getInstance()->getController()->getUserCredentials($key);
+        return UserModel::getCurrentUserData($key);
     }
 
     /**
@@ -154,7 +154,7 @@ class Dispatcher
         if($this->_controller->tokenValidationRequiredFor($this->_actionName)){
             $headers = self::getAllHeaders();
             if(isset($headers[TOKEN_HEADER_FIELD])){
-                $this->_controller->setUserCredentials(UserModel::authenticateToken($headers[TOKEN_HEADER_FIELD]));
+                UserModel::authenticateToken($headers[TOKEN_HEADER_FIELD]);
                 return $this;
             }
             throw new \Exception(AUTH_PERMISSION_DENIED, 403);

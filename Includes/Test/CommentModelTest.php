@@ -20,45 +20,41 @@ class CommentModelTest extends TestCase{
             "ext_company_id" => '66',
             "forum_type" => "forum",
             "branch_name" => "Fysio-therapie",
-            "ext_branch_id" => '66'
+            "ext_branch_id" => '66',
+            "ext_office_id" => '11',
+            "office_name" => 'office name',
+            "office_restricted" => 0,
+            "company_restricted" => 0,
+            "branch_restricted" => 1,
         ];
         $category = [
             'title' => 'Toplevel category',
             'description' => 'Long story short .',
             'token_id' => 2,
-            'local_branch_id' => 2
         ];
         $subCategory = [
             'title' => 'Sublevel category',
             'description' => 'Long story short .',
             'parent_id' => 2,
             'token_id' => 2,
-            'local_branch_id' => 2
         ];
 
         UserModel::getUserToken($credentials);
         CategoryModel::create($category);
         CategoryModel::create($subCategory);
 
-        $fakeBranch = [
-           'ext_branch_id' => 123,
-           'branch_name' => 'fake branch',
-        ];
-        BaseModel::_insert($fakeBranch, 'branches');
 
         $topic = [
             'category_id' => 1,
             'title' => 'My first topic',
             'description' => 'Long story short .',
-            'token_id' => 2,
-            'local_branch_id' => 2
+            'token_id' => 1,
         ];
         $subtopic = [
             'category_id' => 2,
             'title' => 'My first sub topic',
             'description' => 'Long story short .',
-            'token_id' => 2,
-            'local_branch_id' => 2
+            'token_id' => 1,
         ];
         TopicModel::create($topic);
         TopicModel::create($subtopic);
@@ -108,8 +104,7 @@ class CommentModelTest extends TestCase{
             'parent_id' => 1,
             'title' => 'This should not show',
             'description' => 'Long story short .',
-            'token_id' => 2,
-            'local_branch_id' => 3
+            'token_id' => 1,
         ];
 
         $category_1 = [
@@ -117,21 +112,18 @@ class CommentModelTest extends TestCase{
             'title' => 'Toplevel category 1',
             'description' => 'Long story short .',
             'token_id' => 2,
-            'local_branch_id' => 2
         ];
         $category_2 = [
             'parent_id' => 1,
             'title' => 'Toplevel category 2',
             'description' => 'Long story short .',
             'token_id' => 2,
-            'local_branch_id' => 2
         ];
         $subcategory_1 = [
             'parent_id' => 3,
             'title' => 'Sublevel category 1',
             'description' => 'Long story short .',
             'token_id' => 2,
-            'local_branch_id' => 2
         ];
 
         CategoryModel::create($not_category);
@@ -143,36 +135,31 @@ class CommentModelTest extends TestCase{
             'category_id' => 1,
             'title' => 'This should not show',
             'description' => 'Long story short edited',
-            'token_id' => 2,
-            'local_branch_id' => 3
+            'token_id' => 1,
         ];
         $not_subtopic = [
             'category_id' => 2,
             'title' => 'My first sub topic edited',
             'description' => 'Long story short edited',
             'token_id' => 2,
-            'local_branch_id' => 2
         ];
         $topic_1 = [
             'category_id' => 1,
             'title' => 'My first sub topic edited',
             'description' => 'Long story short edited',
             'token_id' => 2,
-            'local_branch_id' => 2
         ];
         $topic_2 = [
             'category_id' => 1,
             'title' => 'My first sub topic edited',
             'description' => 'Long story short edited',
             'token_id' => 2,
-            'local_branch_id' => 2
         ];
         $subtopic = [
             'category_id' => 3,
             'title' => 'My first sub topic edited',
             'description' => 'Long story short edited',
             'token_id' => 2,
-            'local_branch_id' => 2
         ];
 
         TopicModel::create($not_topic);

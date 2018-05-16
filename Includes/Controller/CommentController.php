@@ -117,7 +117,7 @@ class CommentController extends BaseController{
      */
     public function getIndexAction(){
         $parameters = $this->validate($this->getValues, $this->getData);
-        $result = CommentModel::get($parameters, $this->getUserCredentials('ext_user_id'));
+        $result = CommentModel::get($parameters, $this->getUserCredentials('token_id'));
         $result['status'] = true;
         return $result;
     }

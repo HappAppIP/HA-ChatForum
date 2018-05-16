@@ -70,17 +70,12 @@ CREATE TABLE `offices` (
   `local_office_id` int(11) unsigned NOT NULL AUTO_INCREMENT,
   `ext_office_id` int(11) unsigned DEFAULT NULL,
   `local_company_id` int(11) unsigned NOT NULL,
-  `local_branch_id` int(11) unsigned NOT NULL,
-  `office_name` int(11) unsigned NULL,
+  `office_name` VARCHAR(255) NOT NULL,
   `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
   `updated_at` timestamp NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`local_office_id`),
   UNIQUE KEY(`ext_office_id`),
   UNIQUE KEY `office_unique_name_local_branch_id` (`office_name`, `local_company_id`),
-  CONSTRAINT fk_offices_branch_id
-    FOREIGN KEY (local_branch_id) REFERENCES branches(local_branch_id)
-    ON UPDATE CASCADE
-    ON DELETE CASCADE,
   CONSTRAINT fk_offices_company_id
   FOREIGN KEY (local_company_id) REFERENCES companies(local_company_id)
     ON UPDATE CASCADE
@@ -114,10 +109,30 @@ CREATE TABLE `userTokens` (
     ON UPDATE CASCADE
     ON DELETE CASCADE,
   CONSTRAINT fk_userTokens_office_id
-    FOREIGN KEY (local_office_id) REFERENCES offices(local_branch_id)
+    FOREIGN KEY (local_office_id) REFERENCES offices(local_office_id)
     ON UPDATE CASCADE
     ON DELETE CASCADE
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
+
+
+DROP TABLE IF EXISTS `tokenAcls`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `tokenAcls` (
+  `acl_id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `token_id` int(11) unsigned NOT NULL,
+  `office_restricted` BOOL,
+  `company_restricted` BOOL,
+  `branch_restricted` BOOL,
+  `last_update` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`acl_id`),
+  UNIQUE KEY (token_id),
+  CONSTRAINT fk_tokenAcls__token_id
+  FOREIGN KEY (token_id) REFERENCES userTokens(token_id)
+    ON UPDATE CASCADE
+    ON DELETE CASCADE
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
+
 --
 -- Table structure for table `categories`
 --
@@ -128,17 +143,12 @@ DROP TABLE IF EXISTS `categories`;
 CREATE TABLE `categories` (
   `category_id` int(11) unsigned NOT NULL AUTO_INCREMENT,
   `token_id` int(11) unsigned NOT NULL ,
-  `local_branch_id` int(11) unsigned DEFAULT NULL,
   `parent_id` int(11) unsigned DEFAULT '0',
   `title` varchar(255) DEFAULT NULL,
   `description` text,
   `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
   `updated_at` timestamp NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`category_id`),
-  CONSTRAINT fk_categories__local_branch_id
-    FOREIGN KEY (local_branch_id) REFERENCES branches(local_branch_id)
-    ON UPDATE CASCADE
-    ON DELETE CASCADE,
   CONSTRAINT fk_categories__token_id
     FOREIGN KEY (token_id) REFERENCES userTokens(token_id)
     ON UPDATE CASCADE
@@ -158,16 +168,11 @@ CREATE TABLE `topics` (
   `topic_id` int(11) unsigned NOT NULL AUTO_INCREMENT,
   `category_id` int(11) unsigned NOT NULL,
   `token_id` int(11) unsigned NOT NULL,
-  `local_branch_id` int(11) unsigned NOT NULL,
   `title` varchar(255) DEFAULT NULL,
   `description` text,
   `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
   `updated_at` timestamp NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`topic_id`),
-  CONSTRAINT fk_topics__local_branch_id
-  FOREIGN KEY (local_branch_id) REFERENCES branches(local_branch_id)
-    ON UPDATE CASCADE
-    ON DELETE CASCADE,
   CONSTRAINT fk_topics__category_id
     FOREIGN KEY (category_id) REFERENCES categories(category_id)
     ON UPDATE CASCADE

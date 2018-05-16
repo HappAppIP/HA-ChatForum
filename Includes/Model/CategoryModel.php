@@ -4,7 +4,38 @@ namespace Model;
 use Lib\BaseModel;
 use Lib\Dispatcher;
 
+/**
+ * Class CategoryModel
+ * @package Model
+ */
 class CategoryModel extends BaseModel{
+
+    /**
+     * @var array
+     */
+    private static $_categoryLookup = [];
+
+    /**
+     * @param $category_id
+     * @return bool
+     * @throws \Exception
+     */
+    public function isAllowed($category_id){
+        if(!isset(self::$_categoryLookup[$category_id])) {
+            $Q = <<<EOS
+SELECT u.local_branch_id, u.local_company_id, u.local_office_id 
+    FROM categories AS c
+      JOIN userTokens AS u USING(token_id)
+    WHERE category_id = ?
+EOS;
+            $row = self::fetchRow($Q, [$category_id]);
+            self::$_categoryLookup[$category_id] = $row;
+        }else {
+            $row = self::$_categoryLookup[$category_id];
+        }
+        UserModel::isAllowed($row['local_branch_id'], $row['local_company_id'], $row['local_office_id']);
+        return true;
+    }
 
     /**
      * @param $data
@@ -12,6 +43,11 @@ class CategoryModel extends BaseModel{
      * @throws \ErrorException
      */
     public static function create($data){
+        if(isset($data['parent_id'])) {
+            // parent_id will not be set when we are creating a new forum or chat (like the first ever time it is viewed)
+            // @todo We need to check permissions for this within the controller.
+            self::isAllowed($data['parent_id']);
+        }
         unset($data['forum_type']); // in case it is set.
         return self::_insert($data, 'categories');
     }
@@ -21,16 +57,21 @@ class CategoryModel extends BaseModel{
      * @param $data
      * @return bool
      * @throws \ErrorException
+     *
      */
     public static function update($category_id, $data){
+        self::isAllowed($category_id);
         return self::_update('categories', 'category_id', $category_id, $data);
     }
 
     /**
      * @param $category_id
      * @return int
+     *
+     * @throws \Exception
      */
     public static function delete($category_id){
+        self::isAllowed($category_id);
         $data = self::_query('SELECT category_id FROM categories WHERE parent_id=?', [$category_id]);
         while($row=$data->fetch()){
             self::delete($row['category_id']);
@@ -41,17 +82,16 @@ class CategoryModel extends BaseModel{
 
     /**
      * @param $category_id
-     * @param $localBranch_id
-     * @param $forumType
      * @return array
+     * @throws \Exception
+     *
      */
-    public static function get($category_id, $localBranch_id, $forumType, $limitStart=0, $limitSize=20, $ordeDirection='DESC'){
-
-
+    public static function get($category_id, $limitStart=0, $limitSize=20, $ordeDirection='DESC'){
+        self::isAllowed($category_id);
         $ordeDirection = (strtoupper($ordeDirection)=='ASC'?'ASC':'DESC');
         $limit = [(int) $limitStart, (int) $limitSize];
 
-
+        $aclWhere = BaseModel::getACLWhere();
         $Qcount = <<<EOS
 SELECT SUM(c) AS total_records 
   FROM (
@@ -60,13 +100,13 @@ SELECT SUM(c) AS total_records
       FROM categories AS c
         JOIN userTokens AS u USING(token_id)
         JOIN companies AS co USING(local_company_id)
-      WHERE c.parent_id=? AND c.local_branch_id=? AND u.forum_type=?
+      WHERE c.parent_id=? AND $aclWhere
     UNION SELECT
         COUNT(DISTINCT(t.topic_id)) c, 2 AS uniqueUnion
       FROM topics AS t
         JOIN userTokens AS u USING(token_id)
         JOIN companies AS co USING(local_company_id)
-      WHERE t.category_id =? AND t.local_branch_id=? AND u.forum_type=?
+      WHERE t.category_id =? AND $aclWhere
   ) 
 AS sub
 EOS;
@@ -89,10 +129,10 @@ SELECT
     NULL as last_comment
   FROM categories AS c
     JOIN userTokens AS u USING(token_id)
-    LEFT JOIN topics AS t ON t.category_id=c.category_id AND t.local_branch_id=c.local_branch_id
+    LEFT JOIN topics AS t ON t.category_id=c.category_id
     LEFT JOIN categories AS c2 ON c.category_id=c2.parent_id
     JOIN companies AS co USING(local_company_id)
-  WHERE c.parent_id=? AND c.local_branch_id=? AND u.forum_type=?
+  WHERE c.parent_id=? AND $aclWhere
   GROUP BY category_id
 UNION SELECT
     'topic' AS type,
@@ -113,37 +153,37 @@ UNION SELECT
     JOIN userTokens AS u USING(token_id)
     LEFT JOIN comments as c USING(topic_id)
     JOIN companies AS co USING(local_company_id)
-  WHERE t.category_id =? AND t.local_branch_id=? AND u.forum_type=?
+  WHERE t.category_id =? AND  $aclWhere
   GROUP BY t.topic_id
 ORDER BY type ASC, created_at $ordeDirection
-LIMIT $limitStart, $limitSize;
+LIMIT $limit[0], $limit[1];
 EOS;
         Dispatcher::setDebugData('CategoryModel->get()', [
             'category_id' => $category_id,
-            'local_branch_id' => $localBranch_id,
-            'forum_type' => $forumType,
             'query' => $Q,
             'queryCount' => $Qcount,
-            'params' => [$category_id, $localBranch_id, $forumType, $category_id, $localBranch_id, $forumType]
+            'params' => [$category_id, $category_id]
         ]);
-        $count = self::_query($Qcount, [$category_id, $localBranch_id, $forumType, $category_id, $localBranch_id, $forumType])->fetch();
-        $result = self::_query($Q, [$category_id, $localBranch_id, $forumType, $category_id, $localBranch_id, $forumType])->fetchall();
+        $count = self::_query($Qcount, [$category_id, $category_id])->fetch();
+        $result = self::_query($Q, [$category_id, $category_id])->fetchall();
 
         if($result === null){
             return [];
         }
-        return ['data' => $result, 'total_records' => $count['total_records'], 'limit_start' => $limitStart, 'limit_size' => $limitSize];
+        return ['data' => $result, 'total_records' => $count['total_records'], 'limit_start' => $limit[0], 'limit_size' => $limit[1]];
     }
 
     /**
      * @param $data
      * @return array
      * @throws \ErrorException
+     *
      */
     public static function getOrCreate($data){
-        $q = 'SELECT category_id FROM categories AS c JOIN userTokens AS u USING(token_id) WHERE c.title=? AND c.local_branch_id=? AND u.forum_type=?';
+        $aclWhere = BaseModel::getACLWhere();
+        $q = 'SELECT category_id FROM categories AS c JOIN userTokens AS u USING(token_id) WHERE c.title=? AND ' . $aclWhere;
         $row = self::fetchRow($q, [
-            $data['title'], $data['local_branch_id'], $data['forum_type']
+            $data['title']
         ]);
         Dispatcher::setDebugData('CategoryModel->getOrCreate()', ['query' => $q, 'result' => $row]);
         if($row===false){
@@ -151,7 +191,7 @@ EOS;
             Dispatcher::setDebugData('CategoryModel->getOrCreate()', ['creating new record' => true]);
         }
         Dispatcher::setDebugData('CategoryModel->getOrCreate()', ['creating new record' => false]);
-        $data = self::get($row['category_id'], $data['local_branch_id'], $data['forum_type']);
+        $data = self::get($row['category_id']);
         $return['category_id'] = $row['category_id'];
         $return['data'] = $data;
         return $return;

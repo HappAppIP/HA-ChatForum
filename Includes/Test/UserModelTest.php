@@ -37,7 +37,12 @@ class USerModelTest extends TestCase
             "ext_company_id" => '66',
             "forum_type" => "FORUM",
             "branch_name" => "Fysio",
-            "ext_branch_id" => '66'
+            "ext_branch_id" => '66',
+            "office_name" => "Office name",
+            "ext_office_id" => "80",
+            "branch_restricted" => 1,
+            "company_restricted" => 0,
+            "office_restricted" => 0,
         ];
 
         $token = UserModel::getUserToken($credentials);
@@ -52,10 +57,12 @@ class USerModelTest extends TestCase
 
 
         $q=<<<EOS
-SELECT user_name, ext_user_id, company_name, ext_company_id, forum_type, branch_name, ext_branch_id 
+SELECT user_name, ext_user_id, company_name, ext_company_id, forum_type, branch_name, ext_branch_id, office_name, ext_office_id, branch_restricted, company_restricted, office_restricted
     FROM userTokens AS u
-      JOIN companies USING(local_company_id)
-      JOIN branches USING(local_branch_id)
+      JOIN offices AS o USING(local_office_id)
+      JOIN companies AS c ON u.local_company_id=c.local_company_id
+      JOIN branches AS b ON u.local_branch_id = b.local_branch_id
+      JOIN tokenAcls AS a USING(token_id)
   WHERE u.token = ? AND u.ext_user_id = ?
 EOS;
 
@@ -71,7 +78,12 @@ EOS;
             "ext_company_id" => '66',
             "forum_type" => "FORUM",
             "branch_name" => "Fysio-therapie",
-            "ext_branch_id" => '66'
+            "ext_branch_id" => '66',
+            "office_name" => "Office name",
+            "ext_office_id" => "80",
+            "branch_restricted" => 1,
+            "company_restricted" => 0,
+            "office_restricted" => 0,
         ];
 
         $token_3 = UserModel::getUserToken($credentials);
@@ -80,10 +92,12 @@ EOS;
         $this->assertEquals($token, $token_3, 'Tokens do not match');
 
         $q=<<<EOS
-SELECT user_name, ext_user_id, company_name, ext_company_id, forum_type, branch_name, ext_branch_id 
+SELECT user_name, ext_user_id, company_name, ext_company_id, forum_type, branch_name, ext_branch_id, office_name, ext_office_id, branch_restricted, company_restricted, office_restricted
     FROM userTokens AS u
-      JOIN companies USING(local_company_id)
-      JOIN branches USING(local_branch_id)
+      JOIN offices AS o USING(local_office_id)
+      JOIN companies AS c ON u.local_company_id=c.local_company_id
+      JOIN branches AS b ON u.local_branch_id = b.local_branch_id
+      JOIN tokenAcls AS a USING(token_id)
   WHERE u.token = ? AND u.ext_user_id = ?
 EOS;
 
@@ -103,10 +117,12 @@ EOS;
         $this->assertNotEquals($token, $token_4, 'Tokens should not match as the old one should be expired.');
 
         $q=<<<EOS
-SELECT user_name, ext_user_id, company_name, ext_company_id, forum_type, branch_name, ext_branch_id 
+SELECT user_name, ext_user_id, company_name, ext_company_id, forum_type, branch_name, ext_branch_id, office_name, ext_office_id, branch_restricted, company_restricted, office_restricted
     FROM userTokens AS u
-      JOIN companies USING(local_company_id)
-      JOIN branches USING(local_branch_id)
+      JOIN offices AS o USING(local_office_id)
+      JOIN companies AS c ON u.local_company_id=c.local_company_id
+      JOIN branches AS b ON u.local_branch_id = b.local_branch_id
+      JOIN tokenAcls AS a USING(token_id)
   WHERE u.token = ? AND u.ext_user_id = ?
 EOS;
 
@@ -125,7 +141,12 @@ EOS;
             "ext_company_id" => '66',
             "forum_type" => "FORUM",
             "branch_name" => "Fysio-therapie",
-            "ext_branch_id" => '66'
+            "ext_branch_id" => '66',
+            "office_name" => "Office name",
+            "ext_office_id" => "80",
+            "branch_restricted" => 1,
+            "company_restricted" => 0,
+            "office_restricted" => 0,
         ];
 
         $token_new = UserModel::getUserToken($credentials);
@@ -134,10 +155,12 @@ EOS;
 
 
         $q=<<<EOS
-SELECT user_name, ext_user_id, company_name, ext_company_id, forum_type, branch_name, ext_branch_id 
+SELECT user_name, ext_user_id, company_name, ext_company_id, forum_type, branch_name, ext_branch_id, office_name, ext_office_id, branch_restricted, company_restricted, office_restricted
     FROM userTokens AS u
-      JOIN companies USING(local_company_id)
-      JOIN branches USING(local_branch_id)
+      JOIN offices AS o USING(local_office_id)
+      JOIN companies AS c ON u.local_company_id=c.local_company_id
+      JOIN branches AS b ON u.local_branch_id = b.local_branch_id
+      JOIN tokenAcls AS a USING(token_id)
   WHERE u.token = ? AND u.ext_user_id = ?
 EOS;
 
@@ -159,7 +182,12 @@ EOS;
             "ext_company_id" => '66',
             "forum_type" => "FORUM",
             "branch_name" => "Fysio",
-            "ext_branch_id" => '66'
+            "ext_branch_id" => '66',
+            "office_name" => "Office name",
+            "ext_office_id" => "80",
+            "branch_restricted" => 1,
+            "company_restricted" => 0,
+            "office_restricted" => 0,
         ];
 
         $token = UserModel::getUserToken($credentials);

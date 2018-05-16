@@ -113,10 +113,10 @@ class Validate{
                     $this->_errors[$key] = VALIDATE_TYPE_INT_MAX . $validators['max'];
                     $this->_throw();
                 }
-                $parameters[$key] = (int) $parameters[$key];
+                $parameters[$key] = (int) $value;
                 break;
             case('varchar'):
-                if(!is_string($parameters[$key]) && !ctype_digit($value)){
+                if(!is_string($value) && !ctype_digit($value)){
                     unset($parameters[$key]);
                     $this->_errors[$key] = VALIDATE_TYPE_VARCHAR;
                     $this->_throw();
@@ -135,25 +135,37 @@ class Validate{
                     $this->_throw();
                 }
                 if(!isset($validators['htmlentities'])||$validators['htmlentities']===true){
-                    $parameters[$key] = htmlentities($parameters[$key]);
+                    $parameters[$key] = htmlentities($value);
                 }
                 break;
             case('text'):
-                if(!is_string($parameters[$key]) && !ctype_digit($value)){
+                if(!is_string($value) && !ctype_digit($value)){
                     unset($parameters[$key]);
                     $this->_errors[$key] = VALIDATE_TYPE_TEXT;
                     $this->_throw();
                 }
                 if(!isset($validators['htmlentities'])||$validators['htmlentities']===true){
-                    $parameters[$key] = htmlentities($parameters[$key]);
+                    $parameters[$key] = htmlentities($value);
                 }
                 break;
             case('enum'):
-                if(!in_array($parameters[$key], $validators['enum'])){
+                if(!in_array($value, $validators['enum'])){
                     unset($parameters[$key]);
                     $this->_errors[$key] = VALIDATE_TYPE_ENUM . htmlentities(implode(', ', $validators['enum']));
                     $this->_throw();
                 }
+                break;
+            case('bool'):
+                if($value === 0 || $value === 1){
+                    $value = (bool) $value;
+                }
+                if(is_bool($value)){
+                    $parameters[$key] = $value;
+                    break;
+                }
+                unset($parameters[$key]);
+                $this->_errors[$key] = VALIDATE_TYPE_BOOL;
+                $this->_throw();
                 break;
             default:
                 unset($parameters[$key]);

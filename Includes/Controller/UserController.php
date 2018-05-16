@@ -20,6 +20,16 @@ class UserController extends BaseController{
             'required' => true,
             'type' => 'int',
         ],
+        'office_name' => [
+            'required' => true,
+            'type' => 'varchar',
+            'max_length' => 255,
+            'min_length' => 2,
+        ],
+        'ext_office_id' => [
+            'required' => true,
+            'type' => 'int',
+        ],
         'company_name' => [
             'required' => true,
             'type' => 'varchar',
@@ -49,6 +59,18 @@ class UserController extends BaseController{
             'required' => true,
             'type' => 'varchar',
             'allow_empty' => true // not implemented in dashboard.
+        ],
+        'office_restricted' => [
+            'required' => true,
+            'type' => 'bool'
+        ],
+        'company_restricted' => [
+            'required' => true,
+            'type' => 'bool'
+        ],
+        'branch_restricted' => [
+            'required' => true,
+            'type' => 'bool'
         ]
     ];
 

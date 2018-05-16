@@ -4,8 +4,15 @@ namespace Controller;
 use Lib\BaseController;
 use Model\TopicModel;
 
+/**
+ * Class TopicController
+ * @package Controller
+ */
 class TopicController extends BaseController{
 
+    /**
+     * @var array
+     */
     public $postValues = [
         'category_id' => [
             'type' => 'int',
@@ -23,6 +30,9 @@ class TopicController extends BaseController{
         ]
     ];
 
+    /**
+     * @var array
+     */
     public $putValues = [
         'topic_id' => [
             'type' => 'int',
@@ -39,6 +49,9 @@ class TopicController extends BaseController{
         ]
     ];
 
+    /**
+     * @var array
+     */
     public $deleteValues = [
         'topic_id' =>  [
             'type' => 'int',
@@ -46,6 +59,9 @@ class TopicController extends BaseController{
         ]
     ];
 
+    /**
+     * @var array
+     */
     public $getValues = [
         'topic_id' => [
             'type' => 'int',
@@ -53,6 +69,9 @@ class TopicController extends BaseController{
         ]
     ];
 
+    /**
+     * @var array
+     */
     public $getOrCreateValues = [
         'category_id' => [
             'type' => 'int',
@@ -69,13 +88,13 @@ class TopicController extends BaseController{
             'required' => true
         ]
     ];
+
     /**
      * @return array
      * @throws \Exception
      */
     public function postIndexAction(){
         $data = $this->validate($this->postValues, $this->postData);
-        $data['local_branch_id'] = $this->getUserCredentials('local_branch_id');
         $data['token_id'] = $this->getUserCredentials('token_id');
 
         $id = TopicModel::create($data);
@@ -110,7 +129,7 @@ class TopicController extends BaseController{
      */
     public function getIndexAction(){
         $data = $this->validate($this->getValues, $this->getData);
-        return ['status' => true, 'data' => TopicModel::get($data['topic_id'], $this->getUserCredentials('local_branch_id'), $this->getUserCredentials('forum_type'))];
+        return ['status' => true, 'data' => TopicModel::get($data['topic_id'])];
     }
 
     /**
@@ -120,9 +139,7 @@ class TopicController extends BaseController{
     public function postGetOrCreateAction()
     {
         $data = $this->validate($this->getOrCreateValues, $this->postData);
-        $data['local_branch_id'] = $this->getUserCredentials('local_branch_id');
         $data['token_id'] = $this->getUserCredentials('token_id');
-        $data['forum_type'] = $this->getUserCredentials('forum_type');
         $result = TopicModel::getOrCreate($data);
         return ['status' => true, 'data' => $result];
     }

@@ -109,7 +109,6 @@ class CategoryController extends BaseController{
      */
     public function postIndexAction(){
         $data = $this->validate($this->postValues, $this->postData);
-        $data['local_branch_id'] = $this->getUserCredentials('local_branch_id');
         $data['token_id'] = $this->getUserCredentials('token_id');
 
         $id = CategoryModel::create($data);
@@ -123,7 +122,6 @@ class CategoryController extends BaseController{
      */
     public function putIndexAction(){
         $data = $this->validate($this->putValues, $this->putData);
-        $data['local_branch_id'] = $this->getUserCredentials('local_branch_id');
         $category_id = $data['category_id'];
         unset($data['category_id']);
         CategoryModel::update($category_id, $data);
@@ -145,7 +143,7 @@ class CategoryController extends BaseController{
     public function getIndexAction()
     {
         $data = $this->validate($this->getValues, $this->getData);
-        $result = CategoryModel::get($data['category_id'], $this->getUserCredentials('local_branch_id'), $this->getUserCredentials('forum_type'), $data['limit_start'], $data['limit_size'], $data['order_by']);
+        $result = CategoryModel::get($data['category_id'], $data['limit_start'], $data['limit_size'], $data['order_by']);
         $result['status'] = true;
         return $result;
     }
@@ -156,9 +154,7 @@ class CategoryController extends BaseController{
      */
     public function postGetOrCreateAction(){
         $data = $this->validate($this->getOrCreateValues, $this->postData);
-        $data['local_branch_id'] = $this->getUserCredentials('local_branch_id');
         $data['token_id'] = $this->getUserCredentials('token_id');
-        $data['forum_type'] = $this->getUserCredentials('forum_type');
         $result = CategoryModel::getOrCreate($data);
         return ['status' => true, 'data' => $result];
 

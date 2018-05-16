@@ -20,20 +20,23 @@ class TopicModelTest extends TestCase{
             "ext_company_id" => '66',
             "forum_type" => "forum",
             "branch_name" => "Fysio-therapie",
-            "ext_branch_id" => '66'
+            "ext_branch_id" => '66',
+            "office_name" => "Office name",
+            "ext_office_id" => "80",
+            "branch_restricted" => 1,
+            "company_restricted" => 0,
+            "office_restricted" => 0,
         ];
         $category = [
             'title' => 'Toplevel category',
             'description' => 'Long story short .',
             'token_id' => 1,
-            'local_branch_id' => 1
         ];
         $subCategory = [
             'title' => 'Sublevel category',
             'description' => 'Long story short .',
             'parent_id' => 1,
             'token_id' => 1,
-            'local_branch_id' => 1
         ];
 
         UserModel::getUserToken($credentials);
@@ -51,14 +54,12 @@ class TopicModelTest extends TestCase{
             'title' => 'My first topic',
             'description' => 'Long story short .',
             'token_id' => 2,
-            'local_branch_id' => 2
         ];
         $id = TopicModel::create($topic);
         $this->assertEquals(1,$id);
         $row = $this->getTopic(1);
         $this->assertEquals($topic['category_id'], $row['category_id']);
         $this->assertEquals($topic['token_id'], $row['token_id']);
-        $this->assertEquals($topic['local_branch_id'], $row['local_branch_id']);
         $this->assertEquals($topic['title'], $row['title']);
         $this->assertEquals($topic['description'], $row['description']);
         $this->assertNotNull($row['created_at']);
@@ -69,14 +70,12 @@ class TopicModelTest extends TestCase{
             'title' => 'My first sub topic',
             'description' => 'Long story short .',
             'token_id' => 2,
-            'local_branch_id' => 2
         ];
         $id = TopicModel::create($topic);
         $this->assertEquals(2,$id);
         $row = $this->getTopic(2);
         $this->assertEquals($topic['category_id'], $row['category_id']);
         $this->assertEquals($topic['token_id'], $row['token_id']);
-        $this->assertEquals($topic['local_branch_id'], $row['local_branch_id']);
         $this->assertEquals($topic['title'], $row['title']);
         $this->assertEquals($topic['description'], $row['description']);
         $this->assertNotNull($row['created_at']);
@@ -87,13 +86,11 @@ class TopicModelTest extends TestCase{
             'title' => 'My first sub topic edited',
             'description' => 'Long story short edited',
             'token_id' => 2,
-            'local_branch_id' => 2
         ];
         TopicModel::update(2, $topic);
         $row = $this->getTopic(2);
         $this->assertEquals($topic['category_id'], $row['category_id']);
         $this->assertEquals($topic['token_id'], $row['token_id']);
-        $this->assertEquals($topic['local_branch_id'], $row['local_branch_id']);
         $this->assertEquals($topic['title'], $row['title']);
         $this->assertEquals($topic['description'], $row['description']);
         $this->assertNotNull($row['created_at']);
@@ -118,7 +115,6 @@ class TopicModelTest extends TestCase{
             'title' => 'My first sub topic',
             'description' => 'Long story short .',
             'token_id' => 2,
-            'local_branch_id' => 2
         ];
         $id = TopicModel::create($topic);
 
@@ -134,7 +130,6 @@ class TopicModelTest extends TestCase{
             'title' => 'This should not show',
             'description' => 'Long story short .',
             'token_id' => 2,
-            'local_branch_id' => 2
         ];
 
         $category_1 = [
@@ -142,21 +137,18 @@ class TopicModelTest extends TestCase{
             'title' => 'Toplevel category 1',
             'description' => 'Long story short .',
             'token_id' => 2,
-            'local_branch_id' => 2
         ];
         $category_2 = [
             'parent_id' => 0,
             'title' => 'Toplevel category 2',
             'description' => 'Long story short .',
             'token_id' => 2,
-            'local_branch_id' => 2
         ];
         $subcategory_1 = [
             'parent_id' => 2,
             'title' => 'Sublevel category 1',
             'description' => 'Long story short .',
             'token_id' => 2,
-            'local_branch_id' => 2
         ];
 
         CategoryModel::create($not_category);
@@ -169,35 +161,30 @@ class TopicModelTest extends TestCase{
             'title' => 'This should not show',
             'description' => 'Long story short edited',
             'token_id' => 2,
-            'local_branch_id' => 2
         ];
         $not_subtopic = [
             'category_id' => 2,
             'title' => 'My first sub topic edited',
             'description' => 'Long story short edited',
             'token_id' => 2,
-            'local_branch_id' => 2
         ];
         $topic_1 = [
             'category_id' => 1,
             'title' => 'My first sub topic edited',
             'description' => 'Long story short edited',
             'token_id' => 2,
-            'local_branch_id' => 2
         ];
         $topic_2 = [
             'category_id' => 1,
             'title' => 'My first sub topic edited',
             'description' => 'Long story short edited',
             'token_id' => 2,
-            'local_branch_id' => 2
         ];
         $subtopic = [
             'category_id' => 3,
             'title' => 'My first sub topic edited',
             'description' => 'Long story short edited',
             'token_id' => 2,
-            'local_branch_id' => 2
         ];
 
         TopicModel::create($not_topic);
@@ -257,8 +244,6 @@ class TopicModelTest extends TestCase{
             'title' => 'My first sub topic edited',
             'description' => 'Long story short edited',
             'token_id' => 2,
-            'local_branch_id' => 2,
-            'forum_type' => 'FORUM'
         ];
 
         $topic_1 = TopicModel::getOrCreate($topic);

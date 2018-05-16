@@ -1,6 +1,7 @@
 <?php
 
 namespace Lib;
+use Model\UserModel;
 
 /**
  * Class BaseController
@@ -86,13 +87,11 @@ class BaseController
     /**
      * @param null $key
      * @return array|mixed
+     *
      */
     public function getUserCredentials($key = null)
     {
-        if ($key === null) {
-            return $this->_userCredentials;
-        }
-        return $this->_userCredentials[$key];
+        return UserModel::getCurrentUserData($key);
     }
 
     /**
@@ -102,16 +101,6 @@ class BaseController
     public function tokenValidationRequiredFor($actionName)
     {
         return !in_array($actionName, $this->_skipTokenValidationFor);
-    }
-
-    /**
-     * @param $credentials
-     * @return $this
-     */
-    public function setUserCredentials($credentials)
-    {
-        $this->_userCredentials = $credentials;
-        return $this;
     }
 
     /**
