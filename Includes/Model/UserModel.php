@@ -23,6 +23,9 @@ class UserModel extends BaseModel{
         if ($key === null) {
             return self::$_currentUserData;
         }
+        if(!isset(self::$_currentUserData[$key])){
+            throw new \InvalidArgumentException('Key "' . $key . '" does not exist');
+        }
         return self::$_currentUserData[$key];
     }
 
@@ -44,17 +47,17 @@ class UserModel extends BaseModel{
     public static function isAllowed($localBranchId, $localCompanyId=null, $localOfficeId=null){
         if(self::getCurrentUserData('branch_restricted')===true){
             if(self::getCurrentUserData('local_branch_id') != $localBranchId){
-                throw new \Exception(AUTH_INVALID_BRANCH, 403);
+                throw new \Exception(ACL_BRANCH_RESTRICTED, 403);
             }
         }
         if(self::getCurrentUserData('company_restricted')===true){
             if(self::getCurrentUserData('local_company_id') != $localCompanyId){
-                throw new \Exception(AUTH_INVALID_COMPANY, 403);
+                throw new \Exception(ACL_COMPANY_RESTRICTED, 403);
             }
         }
         if(self::getCurrentUserData('office_restricted')===true){
             if(self::getCurrentUserData('local_office_id') != $localOfficeId){
-                throw new \Exception(AUTH_INVALID_OFFICE, 403);
+                throw new \Exception(ACL_OFFICE_RESTRICTED, 403);
             }
         }
         return true;

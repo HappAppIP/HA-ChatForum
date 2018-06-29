@@ -61,7 +61,7 @@ class ValidateTest extends TestCase
             $this->assertEquals($expectedParameters, $parameters, 'Expected parameters do not match');
             $this->assertEquals($expectedErrors, $validate->getErrors(), 'Expected errors do not match');
         } catch (\UnexpectedValueException $e) {
-            $this->assertFalse($expectedStatus, 'Validation triggered an exception');
+            $this->assertFalse($expectedStatus, 'Validation triggered an exception ' . $e->getMessage());
             $this->assertEquals($expectedParameters, $parameters, 'Expected parameters do not match (failed validation)');
             $this->assertEquals($expectedErrors, $validate->getErrors(), 'Expected errors do not match (failed validation)');
         }
@@ -70,6 +70,8 @@ class ValidateTest extends TestCase
     public function requiredData()
     {
         return [
+            'required on false should be true' => ['key' => 'bool', 'validators' => [], 'parameters' => ['bool' => false], 'expectedStatus' => true, 'expectedErrors' => [], 'expectedParameters' => ['bool' => false]],
+            'required on 0 should be true' => ['key' => 'bool', 'validators' => [], 'parameters' => ['bool' => 0], 'expectedStatus' => true, 'expectedErrors' => [], 'expectedParameters' => ['bool' => 0]],
             'simple valid' => ['key' => 'valid', 'validators' => [], 'parameters' => ['valid' => 'check!'], 'expectedStatus' => true, 'expectedErrors' => [], 'expectedParameters' => ['valid' => 'check!']],
             'simple invalid' => ['key' => 'valid', 'validators' => [], 'parameters' => ['invalid' => 'check!'], 'expectedStatus' => false, 'expectedErrors' => ['valid' => VALIDATE_REQUIRED], 'expectedParameters' => ['invalid' => 'check!']],
             'empty valid' => ['key' => 'empty_valid', 'validators' => ['required' => true, 'allow_empty' => true], 'parameters' => ['empty_valid' => ''], 'expectedStatus' => true, 'expectedErrors' => [], 'expectedParameters' => ['empty_valid' => '']],
@@ -81,6 +83,48 @@ class ValidateTest extends TestCase
             'required false with not empty given "0"' => ['key' => 'oops', 'validators' => ['required' => true, 'allow_empty' => false], 'parameters' => ['oops' => '0'], 'expectedStatus' => true, 'expectedErrors' => [], 'expectedParameters' => ['oops'=>'0']],
         ];
     }
+
+
+    /**
+     * @param $key
+     * @param $validators
+     * @param $parameters
+     * @param $expectedStatus
+     * @param $expectedErrors
+     * @param $expectedParameters
+     * @throws \Exception
+     *
+     * @dataProvider typeBoolData
+     */
+
+    public function testTypeBool($key, $validators, $parameters, $expectedStatus, $expectedErrors, $expectedParameters){
+        $validate = new Mock_Validate();
+        try {
+            $status = $validate->validateType($key, $validators, $parameters);
+            $this->assertEquals($expectedStatus, $status, 'Expected status does not match');
+            $this->assertEquals($expectedParameters, $parameters, 'Expected parameters do not match');
+            $this->assertEquals($expectedErrors, $validate->getErrors(), 'Expected errors do not match');
+        } catch (\UnexpectedValueException $e) {
+            $this->assertFalse($expectedStatus, 'Validation triggered an exception');
+            $this->assertEquals($expectedParameters, $parameters, 'Expected parameters do not match (failed validation)');
+            $this->assertEquals($expectedErrors, $validate->getErrors(), 'Expected errors do not match (failed validation)');
+        }
+    }
+
+    /**
+     * @return array
+     */
+    public function typeBoolData(){
+        return [
+            'bool valid' => ['key' => 'key', 'validators' => ['type' => 'bool'], 'parameters' => ['key' => 1], 'expectedStatus' => true, 'expectedErrors' => [], 'expectedParameters' => ['key' => true]],
+            'bool valid' => ['key' => 'key', 'validators' => ['type' => 'bool'], 'parameters' => ['key' => 0], 'expectedStatus' => true, 'expectedErrors' => [], 'expectedParameters' => ['key' => false]],
+            'bool valid' => ['key' => 'key', 'validators' => ['type' => 'bool'], 'parameters' => ['key' => true], 'expectedStatus' => true, 'expectedErrors' => [], 'expectedParameters' => ['key' => true]],
+            'bool valid' => ['key' => 'key', 'validators' => ['type' => 'bool'], 'parameters' => ['key' => false], 'expectedStatus' => true, 'expectedErrors' => [], 'expectedParameters' => ['key' => false]],
+            'bool valid' => ['key' => 'key', 'validators' => ['type' => 'bool'], 'parameters' => ['key' => 3], 'expectedStatus' => false, 'expectedErrors' => ['key' => 'Property must be a boolean'], 'expectedParameters' => []],
+
+        ];
+    }
+
 
     /**
      * @param $key

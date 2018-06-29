@@ -213,4 +213,94 @@ EOS;
         }
 
     }
+
+    public function testGetUSerCredentials(){
+        $credentials = [
+            "local_branch_id" => 1,
+            "local_company_id" => 1,
+            "local_office_id" => 1,
+            "branch_restricted" => true,
+            "company_restricted" => false,
+            "office_restricted" => false,
+            'SpecificKey' => 'specialValue'
+        ];
+
+        UserModel::setCurrentUserData($credentials);
+
+        $this->assertEquals($credentials, UserModel::getCurrentUserData());
+
+        $this->assertEquals($credentials['SpecificKey'], UserModel::getCurrentUserData('SpecificKey'));
+
+        $this->expectException(\InvalidArgumentException::class);
+        UserModel::getCurrentUserData('NonExistentKey');
+
+
+    }
+
+    public function testIsAllowed(){
+        $credentials = [
+            "local_branch_id" => 1,
+            "local_company_id" => 1,
+            "local_office_id" => 1,
+            "branch_restricted" => true,
+            "company_restricted" => false,
+            "office_restricted" => false,
+        ];
+
+        UserModel::setCurrentUserData($credentials);
+
+        $this->assertTrue(UserModel::isAllowed(1, 1, 1));
+        $this->assertTrue(UserModel::isAllowed(1, 2, 2));
+        try{
+            UserModel::isAllowed(2,1,1);
+            $this->assertFalse(true, ' exeception should be triggered.');
+            return;
+        }catch(\Exception $e){
+            $this->assertEquals(ACL_BRANCH_RESTRICTED, $e->getMessage());
+        }
+
+        $credentials = [
+            "local_branch_id" => 1,
+            "local_company_id" => 1,
+            "local_office_id" => 1,
+            "branch_restricted" => false,
+            "company_restricted" => true,
+            "office_restricted" => false,
+        ];
+
+        UserModel::setCurrentUserData($credentials);
+        $this->assertTrue(UserModel::isAllowed(1, 1, 1));
+
+        $this->assertTrue(UserModel::isAllowed(2, 1, 2));
+        try{
+            UserModel::isAllowed(1,2,1);
+            $this->assertFalse(true, ' exeception should be triggered.');
+            return;
+        }catch(\Exception $e){
+            $this->assertEquals(ACL_COMPANY_RESTRICTED, $e->getMessage());
+        }
+
+        $credentials = [
+            "local_branch_id" => 1,
+            "local_company_id" => 1,
+            "local_office_id" => 1,
+            "branch_restricted" => false,
+            "company_restricted" => false,
+            "office_restricted" => true,
+        ];
+
+        UserModel::setCurrentUserData($credentials);
+        $this->assertTrue(UserModel::isAllowed(1, 1, 1));
+
+        $this->assertTrue(UserModel::isAllowed(2, 2, 1));
+        try{
+            UserModel::isAllowed(1,1,2);
+            $this->assertFalse(true, ' exeception should be triggered.');
+        }catch(\Exception $e){
+            $this->assertEquals(ACL_OFFICE_RESTRICTED, $e->getMessage());
+        }
+
+
+
+    }
 }

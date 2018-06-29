@@ -66,7 +66,7 @@ class Validate{
     protected function _validateRequired($key, $validators, &$parameters){
         if(isset($parameters[$key])){
             if(!is_object($parameters[$key]) && !is_array($parameters[$key])){
-                if(empty(trim($parameters[$key]))&&$parameters[$key]!==0&&$parameters[$key]!=="0") {
+                if(empty(trim($parameters[$key]))&&$parameters[$key]!==0&&$parameters[$key]!=="0"&&$parameters[$key]!==false) {
                     if (!isset($validators['allow_empty']) || $validators['allow_empty'] == false) {
                         unset($parameters[$key]);
                         $this->_errors[$key] = VALIDATE_REQUIRED_EMPTY;
