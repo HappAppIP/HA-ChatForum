@@ -14,9 +14,9 @@ require __DIR__ . '/../vendor/autoload.php';
 require_once('../Includes/Config/Constants.php');
 
 Lib\Bootstrap::bootstrap();
-
 $dispatcher = Lib\Dispatcher::getInstance();
 try {
+
 
     $dispatcher->setRequest($_SERVER['REQUEST_URI'], $_SERVER['REQUEST_METHOD'], DEBUG)
         ->loadController()
